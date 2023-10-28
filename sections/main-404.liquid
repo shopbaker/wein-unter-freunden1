@@ -1,0 +1,17 @@
+<div class="hero-basic__wrapper hero-basic--alt">
+  <div class="container">
+    <div>
+      <h1>{{ 'templates.404.title' | t }} - {{ 'templates.404.subheading' | t }}</h1>
+      <p class="hero-basic__description">{{ 'templates.404.try_again' | t }}</p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404",
+  "tag": "section",
+  "class": "hero-basic error-404",
+  "settings": []
+}
+{% endschema %}

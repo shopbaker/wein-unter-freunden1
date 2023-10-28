@@ -1,0 +1,138 @@
+{%- comment -%}
+  Renders the banners with given settings.
+
+  Usage:
+  {%- render 'component-form-contact'
+      id: block.id, icon: icon, caption: caption, heading: heading, heading_type: heading_type, subheading: subheading, color_icon: color_icon, color_text: color_text, color_subheading: color_subheading, color_background: color_background
+  -%}
+{%- endcomment -%}
+
+<div
+  id="block-{{ id }}"
+  class="form-contact__form-wrapper{% if color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %} grid-content__background{% endif %}"
+>
+  <link rel="stylesheet" href="{{ 'component-form-contact.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'component-form-contact.css' | asset_url | stylesheet_tag }}</noscript>
+  {%- render 'component-header-block' id: id, icon: icon, caption: caption, heading: heading, heading_type: heading_type, subheading: subheading, button_text: button_text, button_url: button_url, color_icon: color_icon, color_text: color_text, color_subheading: color_subheading -%}
+
+  {%- form 'contact', id: 'ContactForm', class: 'form-contact__form' -%}
+    <div class="form-contact__fields">
+      {%- if form.posted_successfully? -%}
+        <div class="form-contact__alerts success">
+          <div tabindex="-1" autofocus>{{ 'sections.contact_form.post_success' | t }}</div>
+        </div>
+      {%- elsif form.errors -%}
+        <div class="form-contact__alerts error">
+          <div class="form__message">
+            <p role="alert" tabindex="-1" autofocus>{{ 'sections.contact_form.error_heading' | t }}</p>
+          </div>
+          {{ form.errors | default_errors }}
+        </div>
+      {%- endif -%}
+
+      <div class="form-contact__two-col">
+        <div class="form-contact__field">
+          <label for="form-contact-name" class="text-sm">
+            {{- 'sections.contact_form.name' | t }}
+            <span aria-hidden="true">*</span></label
+          >
+          <input
+            autocomplete="name"
+            type="text"
+            id="form-contact-name"
+            aria-required="true"
+            required
+            name="contact[{{ 'sections.contact_form.name' | t }}]"
+            value="{%- if form.name -%}{{ form.name }}{%- elsif customer -%}{{ customer.name }}{%- endif -%}"
+            placeholder="{{ 'sections.contact_form.name' | t }}"
+          >
+        </div>
+        <div class="form-contact__field">
+          <label for="form-contact-email" class="text-sm">
+            {{- 'sections.contact_form.email' | t }}
+            <span aria-hidden="true">*</span></label
+          >
+          <input
+            autocomplete="email"
+            type="email"
+            id="form-contact-email"
+            name="contact[email]"
+            spellcheck="false"
+            autocapitalize="off"
+            value="{%- if form.email -%}{{ form.email }}{%- elsif customer -%}{{ customer.email }}{%- endif -%}"
+            pattern="^[\w]{1,}[\w.+-]{0,}@[\w-]{1,}([.][a-zA-Z]{2,}|[.][\w-]{2,}[.][a-zA-Z]{2,})$"
+            required
+            aria-required="true"
+            {%- if form.errors contains 'email' -%}
+              aria-invalid="true"
+              aria-describedby="form-contact-email-error"
+            {%- endif -%}
+            placeholder="{{ 'sections.contact_form.email' | t }}"
+          >
+          {%- if form.errors contains 'email' -%}
+            <small class="form-contact__field-error" id="form-contact-email-error">
+              <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+              <span class="form-contact__message">
+                {{- form.errors.translated_fields['email'] | capitalize }}
+                {{ form.errors.messages['email'] -}}
+              </span>
+            </small>
+          {%- endif -%}
+        </div>
+      </div>
+      <div class="form-contact__field">
+        <label for="form-contact-phone" class="text-sm">{{ 'sections.contact_form.phone' | t }}</label>
+        <input
+          type="tel"
+          id="form-contact-phone"
+          class="field__input"
+          autocomplete="tel"
+          name="contact[{{ 'sections.contact_form.phone' | t }}]"
+          pattern="[0-9\-]*"
+          value="{%- if form.phone -%}{{ form.phone }}{%- elsif customer -%}{{ customer.phone }}{%- endif -%}"
+          placeholder="{{ 'sections.contact_form.phone' | t }}"
+        >
+      </div>
+      <div class="form-contact__field">
+        <label for="form-contact-message" class="text-sm">
+          {{- 'sections.contact_form.message' | t }}
+          <span aria-hidden="true">*</span></label
+        >
+        <textarea
+          required
+          rows="10"
+          id="form-contact-message"
+          name="contact[body]"
+          placeholder="{{ 'sections.contact_form.message' | t }}"
+        >
+        {{- form.body -}}
+      </textarea>
+      </div>
+      <div class="form-contact__field">
+        <button type="submit" class="button--{{ style_button }}">
+          {{ 'sections.contact_form.send' | t }}
+        </button>
+      </div>
+    </div>
+  {%- endform -%}
+</div>
+
+{%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+  <style>
+    #block-{{ id }} label,
+    #block-{{ id }} input,
+    #block-{{ id }} textarea {
+      color: {{ color_text }}
+    }
+  </style>
+{%- endif -%}
+
+{%- if color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' -%}
+  <style>
+    #block-{{ id }}.grid-content__background {
+      background: {{ color_background }};
+      padding: 3.2rem;
+      border-radius: 0.8rem;
+    }
+  </style>
+{%- endif -%}

@@ -1,0 +1,82 @@
+{%- comment -%}
+  Renders an collection card for a given blog with settings.
+
+  Accepts:
+  - collection: {Object} Collection object
+
+  Usage:
+  {%- render 'component-card-collection'
+    collection: block.settings.collection
+  -%}
+{%- endcomment -%}
+
+{%- liquid
+  if ratio_image == 'default' or ratio_image == null
+    assign ratio_image = settings.card_ratio_image_article
+  else
+    assign ratio_image = ratio_image
+  endif
+
+  if style_card == 'default' or style_card == null
+    assign style_card = settings.card_style_article
+  else
+    assign style_card = style_card
+  endif
+
+  if display_text_card == 'default' or display_text_card == null
+    assign display_text_card = settings.card_display_text_article
+  else
+    assign display_text_card = display_text_card
+  endif
+
+  if style_button_card == 'default' or style_button_card == null
+    assign style_button_card = settings.card_style_cta_article
+  else
+    assign style_button_card = style_button_card
+  endif
+-%}
+
+<article class="card-article card {{ blog.title | handleize }}">
+  <a href="{{ collection.url }}">
+    <div>
+      {%- if collection.featured_image -%}
+        <figure class="figure--{{ ratio_image }} style--{{ style_card }}" role="none">
+          <noscript class="loading-lazy">
+            {{ collection.featured_image | image_url: width: 800 | image_tag: width: 400, class: 'img-absolute', loading: 'lazy' }}
+          </noscript>
+        </figure>
+      {%- else -%}
+        <figure class="figure--{{ ratio_image }} figure--background style--{{ style_card }}" role="none">
+          {{ 'image' | placeholder_svg_tag: 'img-placeholder' }}
+        </figure>
+      {%- endif -%}
+      {%- unless display_text_card == 'no_text' -%}
+        <div class="card__content">
+          {%- if display_text_card != 'text' -%}
+            {% assign caption = '' %}
+            {% if caption != '' %}
+              <p class="card__blog-title text-xs">{{ caption }}</p>
+            {% endif %}
+            <p class="card__title text-lg">
+              {%- if collection.title -%}
+                {{ collection.title }}
+              {%- else -%}
+                {{ 'cards.collections.collection_title' | t }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+          {%- if collection.description and display_text_card != 'title' -%}
+            <p class="card__description text-md">{{ collection.description | strip_html }}</p>
+          {%- endif -%}
+        </div>
+      {%- endunless -%}
+    </div>
+    {%- unless show_footer == false -%}
+      <div class="card__bottom">
+        <p class="button{{ style_button_card | prepend: '--' }} swiper-no-swiping">
+          {{ 'cards.collections.view_collection' | t }}
+        </p>
+      </div>
+    {%- endunless -%}
+  </a>
+</article>

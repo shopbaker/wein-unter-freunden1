@@ -1,0 +1,74 @@
+{%- comment -%}
+  Renders a product add to cart button
+
+  Accepts:
+  - product: {Object} Product Liquid object
+  - show_icon: {Boolean} Renders the cart icon in the button
+
+  Usage:
+  {%- render 'component-form-product',
+    product: product,
+    show_icon: true,
+    class: 'button--sm',
+    icon_button: icon_button,
+    text_button: text_button
+  -%}
+{%- endcomment -%}
+{%- assign product_form_id = 'form-product-' | append: section.id -%}
+
+{%- form 'product', product, id: product_form_id, class: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+  <input
+    type="hidden"
+    name="id"
+    value="{{ product.selected_or_first_available_variant.id }}"
+  >
+  <input type="hidden" id="quantity" min="1" name="quantity" type="number" value="1">
+  <div class="product-converter__error"></div>
+
+  {% if display_gift_card_recipient and product.gift_card? %}
+    {%- render 'component-form-gift-card-recipient', product: product, form: form, section: section -%}
+  {% endif %}
+
+  <button
+    class="ux-cart button {{ class }}"
+    name="add"
+    type="submit"
+    aria-label="{{ 'products.add_to_cart' | t }}"
+    {%- unless product.selected_or_first_available_variant.available -%}
+      disabled="disabled"
+    {%- endunless -%}
+  >
+    {%- if show_icon -%}
+      {%- if icon_button -%}
+        {%- assign icon = icon_button | replace: ' ', '_' | downcase -%}
+        {%- render 'component-icon', icon: icon, icon_class: 'cart-icon' -%}
+      {%- else -%}
+        {%- render 'component-icon', icon: 'shopping_cart', icon_class: 'cart-icon' -%}
+      {%- endif -%}
+      <svg
+        class="loading-icon"
+        width="16px"
+        height="16px"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid"
+        class="loading-ring"
+      >
+        <circle cx="50" cy="50" r="40" stroke-dasharray="163.36281798666926 87.9645943005142" stroke="currentColor" fill="none" stroke-width="8">
+            <animateTransform attributeName="transform" type="rotate" values="0 50 50;180 50 50;360 50 50;" keyTimes="0;0.4;1" dur="0.8s" repeatCount="indefinite" begin="0s"></animateTransform>
+        </circle>
+      </svg>
+    {%- endif -%}
+
+    {%- if product.selected_or_first_available_variant.available -%}
+      <span>
+        {%- if text_button != '' -%}{{ text_button }}{%- else -%}{{ 'products.add_to_cart' | t }}{%- endif -%}
+      </span>
+    {%- else -%}
+      <span>{{ 'products.sold_out' | t }}</span>
+    {%- endif -%}
+  </button>
+  {%- unless display_additional_buttons == false -%}
+    {{ form | payment_button }}
+  {%- endunless -%}
+{%- endform -%}

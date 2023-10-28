@@ -1,0 +1,120 @@
+.main-password__wrapper {
+  text-align: center;
+}
+.main-password__wrapper h1 {
+  margin: 2.4rem 0;
+}
+.main-password__wrapper form {
+  margin: 2.4rem 0 0;
+}
+.main-password input[type=password] {
+  min-height: 4.8rem;
+  padding: 1.6rem;
+  width: 100%;
+}
+
+.main-password .container,
+.main-login .container,
+.main-register .container,
+.main-reset-password .container {
+  display: flex;
+  justify-content: center;
+}
+.main-password__header,
+.main-login__header,
+.main-register__header,
+.main-reset-password__header {
+  text-align: center;
+  margin: 0 0 3.2rem 0;
+}
+.main-password__header h1,
+.main-login__header h1,
+.main-register__header h1,
+.main-reset-password__header h1 {
+  margin: 0 0 1.6rem 0;
+}
+.main-password__header .icon,
+.main-login__header .icon,
+.main-register__header .icon,
+.main-reset-password__header .icon {
+  margin: 0 auto 0.8rem;
+}
+.main-password__wrapper,
+.main-login__wrapper,
+.main-register__wrapper,
+.main-reset-password__wrapper {
+  max-width: 100%;
+  position: relative;
+  border-radius: 0.8rem;
+}
+.main-password a,
+.main-password button,
+.main-login a,
+.main-login button,
+.main-register a,
+.main-register button,
+.main-reset-password a,
+.main-reset-password button {
+  display: block;
+  margin: 0 0 1.6rem 0;
+  text-align: center;
+}
+.main-password button,
+.main-login button,
+.main-register button,
+.main-reset-password button {
+  width: 100%;
+}
+.main-password__error,
+.main-login__error,
+.main-register__error,
+.main-reset-password__error {
+  text-align: center;
+  margin: 0 0 1.6rem 0;
+}
+.main-password .errors,
+.main-login .errors,
+.main-register .errors,
+.main-reset-password .errors {
+  margin: 0 0 1.6rem 0;
+  text-align: center;
+}
+.main-password #forgot,
+.main-password #login,
+.main-login #forgot,
+.main-login #login,
+.main-register #forgot,
+.main-register #login,
+.main-reset-password #forgot,
+.main-reset-password #login {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: -1;
+  width: 100%;
+}
+.main-password #forgot.active,
+.main-password #login.active,
+.main-login #forgot.active,
+.main-login #login.active,
+.main-register #forgot.active,
+.main-register #login.active,
+.main-reset-password #forgot.active,
+.main-reset-password #login.active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+}
+.main-password .forgot-trigger,
+.main-password .login-trigger,
+.main-login .forgot-trigger,
+.main-login .login-trigger,
+.main-register .forgot-trigger,
+.main-register .login-trigger,
+.main-reset-password .forgot-trigger,
+.main-reset-password .login-trigger {
+  cursor: pointer;
+}

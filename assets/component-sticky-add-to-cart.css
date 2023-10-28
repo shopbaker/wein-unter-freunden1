@@ -1,0 +1,186 @@
+.sticky-add-to-cart {
+  display: block !important;
+}
+.sticky-add-to-cart {
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0);
+  border-radius: 0 0 0.8rem 0.8rem;
+  pointer-events: none;
+  z-index: 19;
+  left: 0;
+  width: 100%;
+  height: 0;
+}
+.sticky-add-to-cart .text-lg,
+.sticky-add-to-cart .text-lg p {
+  line-height: 1.5;
+}
+@media (max-width: 47.99em) {
+  .sticky-add-to-cart {
+    bottom: -1px;
+    position: fixed;
+    z-index: 999999;
+  }
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart {
+    position: sticky;
+  }
+}
+.sticky-add-to-cart__inner {
+  background: rgba(var(--color-background-body), 1);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart__inner {
+    transform: translateY(-100%);
+  }
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart {
+    top: 0;
+  }
+  .sticky-add-to-cart .button--add-to-cart {
+    flex: 0 25%;
+    min-width: 15rem;
+    font-size: 1.4rem;
+  }
+}
+.sticky-add-to-cart .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (max-width: 47.99em) {
+  .sticky-add-to-cart .container {
+    padding: 1.6rem;
+  }
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart .container {
+    padding: 1.6rem;
+  }
+}
+@media (max-width: 47.99em) {
+  .sticky-add-to-cart .container .quantity {
+    display: none;
+  }
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart .container .quantity {
+    margin: 0 1.6rem 0 auto;
+  }
+}
+.sticky-add-to-cart .container .quantity button {
+  padding: 0;
+  margin: 0;
+}
+.sticky-add-to-cart .container .quantity button svg {
+  margin: 0;
+}
+.sticky-add-to-cart.active {
+  pointer-events: auto;
+}
+.sticky-add-to-cart.active .sticky-add-to-cart__inner {
+  opacity: 1;
+  box-shadow: 0 0 4rem -0.4rem rgba(52, 64, 84, 0.08);
+}
+@media (max-width: 47.99em) {
+  .sticky-add-to-cart.active .sticky-add-to-cart__inner {
+    transform: translateY(-100%);
+  }
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart.active .sticky-add-to-cart__inner {
+    transform: translateY(0);
+  }
+}
+.sticky-add-to-cart__meta {
+  display: none;
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart__meta {
+    display: flex;
+    align-items: center;
+  }
+}
+.sticky-add-to-cart__meta img {
+  width: 6.6rem;
+  height: auto;
+  aspect-ratio: 1/1;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 0.8rem;
+  margin: 0 1.6rem 0 0;
+}
+.sticky-add-to-cart__controls {
+  display: none;
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart__controls {
+    display: flex;
+    align-items: flex-end;
+  }
+}
+.sticky-add-to-cart__controls .shopify-payment-button {
+  display: none !important;
+}
+.sticky-add-to-cart__controls variant-selects {
+  display: none;
+}
+@media (min-width: 64em) {
+  .sticky-add-to-cart__controls variant-selects {
+    display: flex;
+  }
+}
+.sticky-add-to-cart__controls variant-selects .product-converter__dropdown {
+  margin: 0 1.6rem 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.sticky-add-to-cart__controls variant-selects .product-converter__dropdown label {
+  min-width: 0;
+  margin: 0 0 0.8rem 0;
+}
+.sticky-add-to-cart__controls variant-selects .product-converter__dropdown div {
+  min-width: 12rem;
+}
+.sticky-add-to-cart__mobile-controls {
+  width: 100%;
+}
+@media (min-width: 48em) {
+  .sticky-add-to-cart__mobile-controls {
+    display: none;
+  }
+}
+.sticky-add-to-cart__mobile-controls .button {
+  width: 100%;
+  height: 4.8rem;
+  padding: 0 1.6rem;
+  font-size: 1.4rem;
+  line-height: 3.5;
+  text-align: center;
+}
+.sticky-add-to-cart__mobile-controls .button svg {
+  height: 1.8rem;
+  margin: 0 0.8rem 0 0;
+}
+.sticky-add-to-cart .price {
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+.sticky-add-to-cart .price p {
+  color: rgba(var(--color-text), 1);
+}
+.sticky-add-to-cart form button {
+  width: 100%;
+  height: 4.8rem;
+  padding: 0 1.6rem;
+  font-size: 1.4rem;
+  line-height: 3.5;
+  text-align: center;
+}
+.sticky-add-to-cart form button svg {
+  height: 1.8rem;
+  margin: 0 0.8rem 0 0;
+}

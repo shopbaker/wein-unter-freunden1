@@ -1,0 +1,17 @@
+.pagination ul {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pagination ul li {
+  transition: transform 0.24s ease;
+}
+.pagination ul li.prev, .pagination ul li.next {
+  transform: translate(0, 0);
+}
+.pagination ul li.prev:hover {
+  transform: translate(-0.4rem, 0);
+}
+.pagination ul li.next:hover {
+  transform: translate(0.4rem, 0);
+}

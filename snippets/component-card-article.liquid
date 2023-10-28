@@ -1,0 +1,109 @@
+{%- comment -%}
+  Renders an article card for a given blog with settings.
+
+  Accepts:
+  - blog: {Object} Blog object
+  - article: {Object} Article object
+  - show_date: {String} The setting either show the article date or not. If it's not included it will not show the image by default
+  - show_author: {String} The setting either show the article author or not. If it's not included it will not show the author by default
+
+  Usage:
+  {%- render 'component-card-article'
+    article: article
+  -%}
+{%- endcomment -%}
+{%- liquid
+  if display_caption == 'default' or display_caption == null
+    assign display_caption = settings.card_caption_article
+  else
+    assign display_caption = display_caption
+  endif
+
+  if ratio_image == 'default' or ratio_image == null
+    assign ratio_image = settings.card_ratio_image_article
+  else
+    assign ratio_image = ratio_image
+  endif
+
+  if style_card == 'default' or style_card == null
+    assign style_card = settings.card_style_article
+  else
+    assign style_card = style_card
+  endif
+
+  if display_text_card == 'default' or display_text_card == null
+    assign display_text_card = settings.card_display_text_article
+  else
+    assign display_text_card = display_text_card
+  endif
+
+  if style_button_card == 'default' or style_button_card == null
+    assign style_button_card = settings.card_style_cta_article
+  else
+    assign style_button_card = style_button_card
+  endif
+-%}
+
+<article class="card-article card {{ blog.title | handleize }}">
+  <a href="{{ article.url }}">
+    {%- if article.image and style_card != 'no_image' -%}
+      <figure class="figure--{{ ratio_image }} style--{{ style_card }}" role="none">
+        <noscript class="loading-lazy">
+          {{ article.image | image_url: width: 800 | image_tag: width: 400, class: 'img-absolute', loading: 'lazy' }}
+        </noscript>
+      </figure>
+    {%- elsif style_card != 'no_image' -%}
+      <figure class="figure--{{ ratio_image }} figure--background style--{{ style_card }}" role="none">
+        {{ 'image' | placeholder_svg_tag: 'img-placeholder' }}
+      </figure>
+    {%- endif -%}
+    {%- unless display_text_card == 'no_text' -%}
+      <div class="card__content">
+        {%- if display_text_card != 'text' -%}
+          {% assign caption = '' %}
+          {% if blog.title and display_caption != 'none' %}
+            {% assign caption = caption | prepend: blog.title %}
+          {% endif %}
+          {%- if display_caption == 'author' and article.author -%}
+            {%- if blog.title -%}
+              {%- assign caption = caption | append: '  &ndash; ' -%}
+            {%- endif -%}
+            {%- assign caption = caption | append: article.author -%}
+          {%- elsif display_caption == 'date' and article.created_at %}
+            {%- if blog.title -%}
+              {%- assign caption = caption | append: '  &ndash; ' -%}
+            {%- endif -%}
+            {%- assign date = article.created_at | date: format: 'full_date' -%}
+            {%- assign caption = caption | append: date -%}
+          {%- elsif display_caption == 'author_and_date' and article.created_at and article.author %}
+            {%- if blog.title -%}
+              {%- assign caption = caption | append: '  &ndash; ' -%}
+            {%- endif -%}
+            {%- assign date = article.created_at | date: format: 'full_date' -%}
+            {%- assign caption = caption | append: article.author | append: '  &ndash; ' | append: date -%}
+          {%- endif -%}
+          {% if caption != '' %}
+            <p class="card__blog-title text-xs">{{ caption }}</p>
+          {% endif %}
+          <p class="card__title text-lg">
+            {%- if article.title -%}
+              {{ article.title }}
+            {%- else -%}
+              {{ 'cards.articles.title' | t }}
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+        {%- if article.excerpt and display_text_card != 'title' -%}
+          <p class="card__description text-md">{{ article.excerpt_or_content | strip_html }}</p>
+        {%- endif -%}
+      </div>
+    {%- endunless -%}
+    {%- unless show_footer == false -%}
+      <div class="card__bottom">
+        <p class="button{{ style_button_card | prepend: '--' }} swiper-no-swiping">
+          {{ 'cards.articles.read_more' | t }}
+        </p>
+      </div>
+    {%- endunless -%}
+  </a>
+</article>

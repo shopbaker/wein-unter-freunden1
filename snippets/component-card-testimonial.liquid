@@ -1,0 +1,44 @@
+{%- comment -%}
+  Renders a testimonial card.
+
+  Usage:
+  {%- render 'component-card-testimonial'
+    rating: block.settings.rating,
+    content: block.settings.content,
+    source: block.settings.source,
+    product: block.settings.product,
+    style_image: block.settings.style_image -%}
+{%- endcomment -%}
+
+<div class="card-testimonial">
+  <div class="card-testimonial__content">
+    {%- if rating and rating != '' -%}
+      {%- render 'component-rating-product', rating: rating, show_description: false -%}
+    {%- endif -%}
+    {%- if content and content != '' -%}
+      <div class="card-testimonial__testimonial wysiwyg">{{ content }}</div>
+    {%- endif -%}
+    {%- if source and source != '' -%}
+      <p class="card-testimonial__source">{{ source }}</p>
+    {%- endif -%}
+  </div>
+  <div class="card-testimonial__shop">
+    {%- if product -%}
+      <div class="card-testimonial__image card-testimonial__image--{{ style_image }}">
+        {%- if product.featured_image -%}
+          <noscript class="loading-lazy">
+            {{ product.featured_image | image_url: width: 100 | image_tag: width: 50, loading: 'lazy' }}
+          </noscript>
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'img-placeholder' }}
+        {%- endif -%}
+      </div>
+      {%- if product.title -%}
+        <a href="{{ product.url }}" class="swiper-no-swiping">
+          {{ 'products.view' | t }}
+          {{ product.title }}
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>

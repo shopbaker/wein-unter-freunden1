@@ -1,0 +1,11 @@
+.gift-card {
+  padding: 3.2rem 0;
+}
+.gift-card__copy-success {
+  display: flex;
+  align-items: center;
+  margin: 2.4rem 0;
+}
+.gift-card__number {
+  width: 100%;
+}

@@ -1,0 +1,92 @@
+{%- comment -%}
+  Renders a list of product's price (regular, sale)
+
+  Accepts:
+  - product: {Object} Product Liquid object (optional)
+  - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
+  - price_class: {String} Adds a price class to the price element (optional)
+
+  Usage:
+  {%- render 'price', product: product, use_variant: true -%}
+{%- endcomment -%}
+{%- liquid
+  if use_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign compare_at_price = target.compare_at_price
+  assign price = target.price | default: 1999
+  assign available = target.available | default: false
+  assign money_price = price | money
+  if settings.display_currency
+    assign money_price = price | money_with_currency
+  endif
+
+  if target == product and product.price_varies
+    assign money_price = 'products.price.from_price_html' | t: price: money_price
+  endif
+-%}
+
+<div
+  id="{{ id }}"
+  class="price{% if size_text %} text-{{ size_text }}{% endif %}{% if available == false %} price--sold-out {% endif %}{% if compare_at_price > price %} price--on-sale {% endif %}{% if product.price_varies == false and product.compare_at_price_varies %} price--no-compare{% endif %}"
+>
+  <div class="price__regular">
+    <span class="visually-hidden">{{ 'products.price.regular_price' | t }}</span>
+    <span
+      class="price-item price-item--regular"
+      {%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+        style="color: {{ color_text }};"
+      {%- endif -%}
+    >
+      {{ money_price }}
+    </span>
+  </div>
+  <div class="price__sale">
+    {%- unless product.price_varies == false and product.compare_at_price_varies -%}
+      <span class="visually-hidden">{{ 'products.price.regular_price' | t }}</span>
+      <span>
+        <s
+          class="price-item price-item--regular"
+          {%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+            style="color: {{ color_text }};"
+          {%- endif -%}
+        >
+          {%- if settings.display_currency -%}
+            {{ compare_at_price | money_with_currency }}
+          {%- else -%}
+            {{ compare_at_price | money }}
+          {%- endif -%}
+        </s>
+      </span>
+    {%- endunless -%}
+    <span class="visually-hidden">{{ 'products.price.sale_price' | t }}</span>
+    <span
+      class="price-item price-item--sale price-item--last{% if size_text %} text-{{ size_text }}{% endif %}"
+      {%- if color_text_sale and color_text_sale != '' and color_text_sale != 'rgba(0,0,0,0)' -%}
+        style="color: {{ color_text_sale }};"
+      {%- endif -%}
+    >
+      {{ money_price }}
+    </span>
+  </div>
+  <small
+    class="{%- if product.selected_or_first_available_variant.unit_price_measurement == nil -%} u-hide{%- endif -%}"
+    {%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+      style="color: {{ color_text }};"
+    {%- endif -%}
+  >
+    <span class="visually-hidden">{{ 'products.price.unit_price' | t }}</span>
+    <span>{{- product.selected_or_first_available_variant.unit_price | money -}}</span>
+    <span aria-hidden="true">/</span>
+    <span class="visually-hidden">&nbsp;{{ 'accessibility.unit_price_separator' | t }}&nbsp;</span>
+    <span>
+      {%- if product.selected_or_first_available_variant.unit_price_measurement.reference_value != 1 -%}
+        {{- product.selected_or_first_available_variant.unit_price_measurement.reference_value -}}
+      {%- endif -%}
+      {{ product.selected_or_first_available_variant.unit_price_measurement.reference_unit }}
+    </span>
+  </small>
+</div>

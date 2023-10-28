@@ -1,0 +1,15 @@
+<div
+  class="c-stock-status{% if product.selected_or_first_available_variant.available %} in-stock{% endif %}"
+  id="stock-status-{{ section.id }}"
+>
+  <link rel="stylesheet" href="{{ 'component-stock-status.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'component-stock-status.css' | asset_url | stylesheet_tag }}</noscript>
+  <p class="in-stock">
+    {%- render 'component-icon', icon: 'check_circle' -%}
+    {{ 'products.in_stock' | t }}
+  </p>
+  <p class="out-of-stock">
+    {%- render 'component-icon', icon: 'cancel' -%}
+    {{ 'products.sold_out' | t }}
+  </p>
+</div>

@@ -1,0 +1,111 @@
+{%- comment -%}
+  Renders a video element.
+
+  Accepts:
+  - type: Youtube or Vimeo
+  - video_id: ID of the video
+  - url_video_hosted: URL of an externally-hosted video
+  - loop: the loop video setting
+  - mute: the mute video setting
+  - autoplay: the autoplay video setting
+
+  Usage:
+  {%- render 'component-video'
+    type: section.settings.url_video.type,
+    video_id: section.settings.url_video.id
+  -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign external_video_tags = 'playsinline controls'
+  assign video_tags = ''
+  assign autoplay = false
+  assign loop = false
+  assign mute = false
+
+  if video_autoplay
+    assign autoplay = true
+    assign external_video_tags = external_video_tags | prepend: 'autoplay '
+    assign video_tags = video_tags | append: 'autoplay=1&mute=1'
+  endif
+
+  if video_mute
+    assign mute = true
+    assign external_video_tags = external_video_tags | prepend: 'muted '
+    assign video_tags = video_tags | append: '&mute=1'
+  endif
+
+  if video_loop
+    assign loop = true
+    assign external_video_tags = external_video_tags | prepend: 'loop '
+    assign video_tags = video_tags | append: '&loop=1'
+  endif
+
+  if url_video_hosted
+    assign video_type = 'self-hosted'
+  elsif url_video
+    assign video_type = 'external'
+  endif
+
+  if ratio_block == 'default'
+    assign ratio_block = 'landscape'
+  endif
+
+  if type == 'youtube'
+    assign video_tags = video_tags | append: '&enablejsapi=1'
+  elsif type == 'vimeo'
+    assign video_tags = video_tags | append: '&api=1'
+  endif
+-%}
+
+<figure
+  class="figure--{{ ratio_block }} figure--video figure--video-{{ video_type }}"
+  {% if url_video %}
+    data-type="{{ type }}" data-id="{{ video_id }}" data-videotags="{{ video_tags | prepend: "?" }}"
+  {% endif %}
+  role="none"
+>
+  {% unless video_autoplay %}
+    {%- if image_video or url_video -%}
+      <div class="figure--video__poster no-js-hidden" tabindex="0">
+        {%- if image_video -%}
+          <noscript class="loading-lazy">
+            {{ image_video | image_url: width: 2400 | image_tag: class: 'img-absolute', loading: 'lazy' }}
+          </noscript>
+        {%- else -%}
+          {%- if url_video -%}
+            <noscript class="loading-lazy">
+              <img
+                src="{%- if type == 'youtube' -%}https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg{%- endif -%}"
+                class="img-absolute figure--video__external-poster-image"
+                loading="lazy"
+                width="1280"
+                height="768"
+                alt="{{ 'products.media.play_video' | t }}"
+              >
+            </noscript>
+          {%- endif -%}
+        {%- endif -%}
+        {% render 'component-icon', icon: 'play_circle' %}
+      </div>
+    {%- endif -%}
+  {% endunless %}
+
+  {%- if url_video_hosted -%}
+    {{ url_video_hosted | video_tag: image_size: '1000x', autoplay: autoplay, loop: loop, muted: mute, controls: true }}
+  {%- elsif url_video and video_autoplay -%}
+    {%- if type == 'youtube' -%}
+      <iframe
+        src="https://www.youtube.com/embed/{{ video_id }}{{ video_tags | prepend: "?" }}"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
+    {%- else -%}
+      <iframe
+        src="https://player.vimeo.com/video/{{ video_id }}{{ video_tags | prepend: "?" }}"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
+    {%- endif -%}
+  {%- endif -%}
+</figure>

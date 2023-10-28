@@ -1,0 +1,123 @@
+{%- comment -%}
+  Renders rich text with icon (formerly text with icon, formerly WYSIWYG) component.
+
+  Accepts:
+  - content
+  - color_background
+  - color_text
+
+  Usage:
+  {%- render 'component-rich-text'
+    id: id,
+    caption: caption,
+    heading: heading,
+    heading_type: heading_type,
+    content: content,
+    color_background: color_background,
+    color_background_gradient: color_background_gradient,
+    color_border: color_border,
+    color_text: color_text,
+    stretch: section.settings.stretch,
+    alignment_text: alignment_text,
+    button_text: button_text,
+    button_url: button_url
+    style_button: style_button
+  -%}
+{%- endcomment -%}
+
+<div
+  class="rich-text__wrapper rich-text__wrapper--{{ id }}{% if color_background_gradient and color_background_gradient != '' or color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %} rich-text__wrapper--background{% endif %}{% if stretch %} rich-text__wrapper--stretch{% endif %}"
+  style="{%- if color_background_gradient and color_background_gradient != '' -%}background: {{ color_background_gradient }};{%- elsif color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' -%}background: {{ color_background }};{%- endif -%}{%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}color: {{ color_text }};{%- endif -%}{%- if position_icon == 'top' or  position_icon == 'bottom' -%}flex-direction: column;{%- endif -%}{%- if alignment_text -%}text-align: {{ alignment_text }};align-items: {%- if alignment_text == 'left' -%}flex-start{%- elsif alignment_text == 'right' -%}flex-end{%- else -%}{{ alignment_text }}{%- endif -%};justify-content: {%- if alignment_text == 'left' -%}flex-start{%- elsif alignment_text == 'right' -%}flex-end{%- else -%}{{ alignment_text }}{%- endif -%};{%- endif -%}"
+>
+  {%- unless icon == 'none' -%}
+    {% if icon and icon != '' %}
+      {%- render 'component-icon', icon: icon -%}
+      <style>
+        .rich-text__wrapper--{{ id }} .icon {
+          {%- if color_icon and color_icon != '' and color_icon != 'rgba(0,0,0,0)' -%}
+            color: {{ color_icon }};
+          {%- endif -%}
+          {%- if color_border_icon and color_border_icon != '' and color_border_icon != 'rgba(0,0,0,0)' -%}
+            border: 1px solid {{ color_border_icon }};
+            border-radius: 50%;
+            padding: 2.4rem;
+            {%- if position_icon == 'left' -%}
+              margin: 0.8rem 1.6rem 0 0;
+            {%- elsif position_icon == 'right' -%}
+              margin: 0.8rem 0 0 1.6rem;
+            {%- endif -%}
+          {%- endif -%}
+          {%- if position_icon == 'center' -%}
+            align-self: center;
+            margin: 0 0 1.6rem 0;
+          {%- elsif position_icon == 'left' -%}
+            align-self: flex-start;
+            margin: 0.8rem 1.6rem 0 0;
+          {%- elsif position_icon == 'right' -%}
+            align-self: flex-start;
+            order: 2;
+            margin: 0.8rem 0 0 1.6rem;
+          {%- elsif position_icon == 'bottom' -%}
+            order: 2;
+            margin: 1.6rem 0 0 0;
+            {%- if alignment_text == 'left' %}
+              align-self: flex-start;
+            {%- elsif alignment_text == 'right' %}
+              align-self: flex-end;
+            {%- else -%}
+              align-self: center;
+            {%- endif -%}
+          {%- else -%}
+            {%- if alignment_text == 'left' %}
+              align-self: flex-start;
+            {%- elsif alignment_text == 'right' %}
+              align-self: flex-end;
+            {%- else -%}
+              align-self: center;
+            {%- endif -%}
+            margin: 0 0 1.6rem 0;
+          {%- endif -%}
+        }
+        .rich-text__wrapper--{{ id }} .rich-text__content {
+          {%- unless color_border and color_border != '' and color_border != 'rgba(0,0,0,0)' -%}
+            padding: 0;
+          {%- endunless -%}
+        }
+        {%- if position_icon == 'center' -%}
+          .rich-text__wrapper--{{ id }} {
+            flex-direction: column;
+          }
+        {%- endif -%}
+      </style>
+    {%- endif -%}
+  {%- endunless -%}
+  <div class="rich-text__content text-{{ size_text }}">
+    {%- if caption and caption != '' -%}
+      <p class="text-display-xs">{{ caption }}</p>
+    {%- endif -%}
+    {%- if heading and heading != '' -%}
+      <{{ heading_type }} class="rich-text__heading"> {{ heading }}</{{ heading_type }}>
+    {%- endif -%}
+    {%- if content and content != '' -%}
+      <div class="wysiwyg">{{ content }}</div>
+    {%- endif -%}
+    {%- if button_text and button_text != '' -%}
+      {%-
+        render 'component-button'
+        text: button_text,
+        url: button_url,
+        style_button: style_button
+      -%}
+    {%- endif -%}
+  </div>
+</div>
+{%- if color_border and color_border != '' and color_border != 'rgba(0,0,0,0)' -%}
+  <style>
+    .rich-text__wrapper--{{ id }} .rich-text__content {
+      border: 1px solid {{ color_border }};
+      box-shadow: 0px 20px 60px rgba(52, 64, 84, 0.02);
+      padding: 3.6rem;
+      margin: 0 0 1.6rem 0;
+    }
+  </style>
+{%- endif -%}

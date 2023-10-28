@@ -1,0 +1,229 @@
+<div id="predictive-search-wrapper--{{ id }}" class="predictive-search-wrapper">
+  <script src="{{ 'component-predictive-search.js' | asset_url }}" defer="defer"></script>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" aria-labelledby="search-label--{{ id }}">
+    <div class="form__input-wrapper">
+      <label class="visually-hidden" for="Search--{{ id }}" id="search-label--{{ id }}">
+        {{- 'search.label' | t }}"</label
+      >
+      {%- render 'component-icon', icon: 'search' -%}
+      <input
+        id="Search--{{ id }}"
+        class="search-input search-trigger"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{%- if placeholder != '' -%}{{ placeholder }}{%- else -%}{{ 'search.placeholder' | t }}{%- endif -%}"
+        data-predictive-search="predictive-search-{{ id }}"
+        autocorrect="off"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+      >
+      <input name="options[prefix]" type="hidden" value="last">
+      <button class="button button--sm search-input">
+        {%- if button_text_search != '' -%}
+          {{ button_text_search }}
+        {%- else -%}
+          {{ 'search.label' | t }}
+        {%- endif -%}
+      </button>
+    </div>
+  </form>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" aria-labelledby="search-mobile-label--{{ id }}">
+    <div class="predictive-search" id="predictive-search" data-predictive-search="predictive-search-{{ id }}">
+      <div class="predictive-search-container">
+        <div class="predictive-search__mobile-header">
+          <div class="form__input-wrapper">
+            <label class="visually-hidden" for="SearchMobile" id="search-mobile-label--{{ id }}">
+              {{- 'search.label' | t }}"</label
+            >
+            {%- render 'component-icon', icon: 'search' -%}
+            <input
+              id="SearchMobile"
+              class="search-input"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="{%- if placeholder != '' -%}{{ placeholder }}{%- else -%}{{ 'search.placeholder' | t }}{%- endif -%}"
+              aria-hidden="true"
+              tabindex="-1"
+              data-predictive-search="predictive-search-{{ id }}"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            >
+            <input name="options[prefix]" type="hidden" value="last">
+            <button class="button button--sm search-input">
+              {%- if button_text_search != '' -%}
+                {{ button_text_search }}
+              {%- else -%}
+                {{ 'search.label' | t }}
+              {%- endif -%}
+            </button>
+          </div>
+          <span class="predictive-search__mobile-close icon close-icon">Close</span>
+        </div>
+
+        <div class="predictive-search__results-container">
+          <div class="search-sidebar">
+            {%- if results_secondary.links -%}
+              <div class="search-sidebar__initial">
+                {%- for link in results_secondary.links -%}
+                  <div class="search-sidebar__list">
+                    <a href="{{ link.url }}" class="search-sidebar__header text-lg search-sidebar__initial">
+                      {{- link.title -}}
+                    </a>
+                    {%- if link.links != blank -%}
+                      <ul class="searches-initial">
+                        {%- for child_link in link.links -%}
+                          <li>
+                            <a href="{{ child_link.url }}">{{ child_link.title }}</a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+            <div class="search-sidebar__results" style="display: none">
+              <div class="search-sidebar__list">
+                <p class="search-sidebar__header text-lg search-sidebar__searches">
+                  {{ 'search.trending_searches' | t }}
+                </p>
+                <ul class="searches-search"></ul>
+              </div>
+              <div class="search-sidebar__header search-sidebar__list">
+                <p class="search-sidebar__header text-lg search-sidebar__collections">
+                  {{ 'search.collections' | t }}
+                </p>
+                <ul class="collection-search"></ul>
+              </div>
+              <div class="search-sidebar__list">
+                <p class="search-sidebar__header text-lg search-sidebar__articles">
+                  {{ 'search.articles' | t }}
+                </p>
+                <ul class="article-search"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-results-notice" style="display: none;">
+            <p>{{ 'search.no_results_predictive_search' | t }}</p>
+          </div>
+
+          <div class="search-products">
+            <div class="search-products__results-grid search-products__grid"></div>
+            {%- if results_default.links -%}
+              <div class="search-products__row">
+                <p class="search-products__heading text-xl">{{ results_default.title }}</p>
+                <div class="search-products__grid" tabindex="-1">
+                  {%- for link in results_default.links -%}
+                    {%- if link.type == 'product_link' -%}
+                      {%- render 'component-card-product', product: link.object, display_text_card: 'title_only', show_footer: false -%}
+                    {%- elsif link.type == 'collection_link' -%}
+                      {%- render 'component-card-collection', collection: link.object, display_text_card: 'title_only', show_footer: false -%}
+                    {%- else -%}
+                      {%- render 'component-card-article', article: link.object, display_text_card: 'title_only', show_footer: false -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- if display_banner -%}
+            <div class="search-banners">
+              {%-
+                render 'component-banner'
+                id: id,
+                style_banner: 'basic',
+                icon: icon,
+                caption: caption,
+                heading: heading,
+                subheading: subheading,
+                color_subheading: color_subheading,
+                button_url: button_url,
+                button_text: button_text,
+                style_button: style_button,
+                style_link: style_link,
+                image: image,
+                image_secondary: image_secondary,
+                image_background: image_background,
+                video_background: video_background,
+                color_background: color_background,
+                color_text: color_text,
+                alignment_vertical: alignment_vertical,
+                alignment_horizontal: alignment_horizontal,
+                color_overlay: color_overlay,
+                opacity_overlay: opacity_overlay,
+                ratio_block: 'square',
+                fit_object: 'cover'
+              -%}
+            </div>
+          {%- endif %}
+        </div>
+      </div>
+
+      {%- if display_features_bar -%}
+        {%- if settings.heading_1 != '' or settings.heading_2 != '' or settings.heading_3 != '' or settings.heading_4 != '' -%}
+          <link
+            rel="stylesheet"
+            href="{{ 'component-features-bar.css' | asset_url }}"
+            media="print"
+            onload="this.media='all'"
+          >
+          <noscript>{{ 'component-features-bar.css' | asset_url | stylesheet_tag }}</noscript>
+          <section class="features-bar features-bar--nav">
+            <div class="features-bar__wrapper">
+              <div class="features-bar__inner-container">
+                <div class="swiper-wrapper">
+                  {%- liquid
+                    if settings.heading_1 != ''
+                      render 'component-features-bar-item', link: settings.link_1, icon: settings.icon_1, heading: settings.heading_1, subheading: settings.subheading_1
+                    endif
+                    if settings.heading_2 != ''
+                      render 'component-features-bar-item', link: settings.link_2, icon: settings.icon_2, heading: settings.heading_2, subheading: settings.subheading_2
+                    endif
+                    if settings.heading_3 != ''
+                      render 'component-features-bar-item', link: settings.link_3, icon: settings.icon_3, heading: settings.heading_3, subheading: settings.subheading_3
+                    endif
+                    if settings.heading_4 != ''
+                      render 'component-features-bar-item', link: settings.link_4, icon: settings.icon_4, heading: settings.heading_4, subheading: settings.subheading_4
+                    endif
+                  -%}
+                </div>
+                <span class="icon swiper-button-prev no-js-hidden">chevron_left</span>
+                <span class="icon swiper-button-next no-js-hidden">chevron_right</span>
+              </div>
+            </div>
+          </section>
+          <style>
+            {%- if settings.color_icon_features and settings.color_icon_features != '' and settings.color_icon_features != 'rgba(0,0,0,0)' -%}
+              .features-bar--nav .icon {
+                color: {{ settings.color_icon_features }};
+              }
+              .features-bar--nav .features-bar__item .icon {
+                border-color: {{ settings.color_icon_features }};
+              }
+            {%- endif -%}
+            {%- if settings.color_text_features and settings.color_text_features != ''and settings.color_text_features != 'rgba(0,0,0,0)' -%}
+              .features-bar--nav .features-bar__item strong,
+              .features-bar--nav .features-bar__item p {
+                color: {{ settings.color_text_features }};
+              }
+            {%- endif -%}
+            {%- if settings.color_background_features and settings.color_background_features != '' and settings.color_background_features != 'rgba(0,0,0,0)' or settings.color_background_gradient_features != '' %}
+              .features-bar--nav .features-bar__wrapper {
+                background: {% if settings.color_background_gradient_features != '' %}{{ settings.color_background_gradient_features }}{% elsif settings.color_background_features != '' and settings.color_background_features != 'rgba(0,0,0,0)' %}{{ settings.color_background_features }}{% endif %};
+              }
+            {%- endif -%}
+          </style>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </form>
+</div>

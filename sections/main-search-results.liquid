@@ -1,0 +1,458 @@
+{%- if section.settings.display_filters or section.settings.display_in_stock -%}
+  <script src="{{ 'component-filter.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+{%- if section.settings.display_filters -%}
+  <script src="{{ 'component-accordion.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+<div class="section__wrapper section__wrapper--no-overflow grid-archive">
+  {%-
+    render 'component-section-padding'
+    id: section.id,
+    color_background_gradient: section.settings.color_background_gradient,
+    color_background: section.settings.color_background,
+    padding_top_mobile: section.settings.padding_top_mobile,
+    padding_bottom_mobile: section.settings.padding_bottom_mobile,
+    padding_top_desktop: section.settings.padding_top_desktop,
+    padding_bottom_desktop: section.settings.padding_bottom_desktop,
+    style_line_top: section.settings.style_line_top,
+    style_line_bottom: section.settings.style_line_bottom,
+    color_line: section.settings.color_line
+  -%}
+  <div class="container">
+    {%- if search.performed and search.results_count > 0 -%}
+      <h1>
+        {{ 'search.title_results' | t }}
+      </h1>
+    {%- else -%}
+      <h1>{{ 'search.title' | t }}</h1>
+    {%- endif -%}
+    <form
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      aria-labelledby="search-label"
+      class="facet-form"
+      id="FacetSearchForm"
+    >
+      <div class="form__input-wrapper">
+        <label class="visually-hidden" for="Search" id="search-label">{{- 'search.label' | t }}"</label>
+        {%- render 'component-icon', icon: 'search' -%}
+        <input
+          id="Search"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'search.placeholder' | t }}"
+          autocorrect="off"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+        <input name="options[prefix]" type="hidden" value="last">
+        <button type="submit" class="button button--sm search-input">
+          {{ 'search.label' | t }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {%- if search.performed and search.results_count > 0 and section.settings.display_filters or section.settings.display_in_stock or section.settings.display_grid_size or section.settings.display_sorting -%}
+    <div class="grid-archive__header sticky" id="grid-archive-header">
+      <div class="grid-archive__header__inner-container">
+        <div class="container">
+          {%- if section.settings.display_filters or section.settings.display_in_stock -%}
+            <div class="grid-archive__filter-triggers">
+              {%- if section.settings.display_filters and search.filters.size > 0 and search.results_count > 0 and search.results_count < 5000 -%}
+                <a class="button--sm toggle-filtering">
+                  {{- 'general.filters.filters' | t }}
+                  {%- render 'component-icon', icon: 'tune' -%}
+                </a>
+              {%- endif -%}
+              {%- if section.settings.display_filters and section.settings.display_in_stock and search.performed and search.filters.size > 0 and search.results_count > 0 and search.results_count < 5000 -%}
+                {%- for filter in search.filters -%}
+                  {%- if filter.label == 'Availability' -%}
+                    <form class="facets__facet facets__facet--availability facet-form">
+                      {%- for filter_value in filter.values -%}
+                        <div class="facets__facet--availability-{{ filter_value.value }}">
+                          <label
+                            class="form-control"
+                            for="Filter-{{ filter.param_name }}-{{ forloop.index }}2"
+                          >
+                            <input
+                              type="checkbox"
+                              name="{{ filter_value.param_name }}"
+                              value="{{ filter_value.value }}"
+                              class="available-online"
+                              id="Filter-{{ filter.param_name }}-{{ forloop.index }}2"
+                              {%- if filter_value.active -%}
+                                checked
+                              {%- endif -%}
+                              {%- if filter_value.count == 0 and filter_value.active == false -%}
+                                disabled
+                              {%- endif -%}
+
+                            ><span>{{ 'products.in_stock' | t }}</span></label
+                          >
+                        </div>
+                      {%- endfor -%}
+                    </form>
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if section.settings.display_grid_size or section.settings.display_sorting -%}
+            <div class="grid-archive__subnav">
+              {%- if section.settings.display_grid_size -%}
+                <div class="cols no-js-hidden">
+                  <p>{{ 'products.view' | t }}</p>
+                  {%- render 'component-icon-custom', icon: 'one-col', icon_class: 'one-col view-icon-mobile' -%}
+                  {%- render 'component-icon-custom', icon: 'two-col', icon_class: 'two-col active view-icon-mobile' -%}
+                  {%- render 'component-icon-custom', icon: 'three-col', icon_class: 'three-col active view-icon-desktop' -%}
+                  {%- render 'component-icon-custom', icon: 'four-col', icon_class: 'four-col view-icon-desktop' -%}
+                </div>
+              {%- endif -%}
+              {%- if section.settings.display_sorting -%}
+                <facet-filters-form>
+                  <form class="sort-by facet-form" id="FacetSortForm">
+                    {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
+
+                    <select name="sort_by" id="SortBy" aria-describedby="a11y-refresh-page-message">
+                      {%- for option in search.sort_options -%}
+                        <option
+                          value="{{ option.value | escape }}"
+                          {%- if option.value == sort_by -%}
+                            selected="selected"
+                          {%- endif -%}
+                        >
+                          {{ option.name | escape }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+
+                    {%- render 'component-icon', icon: 'expand_more' -%}
+                  </form>
+                </facet-filters-form>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="grid-archive__outer-container">
+    <div class="grid-archive__main-container container">
+      {%- if section.settings.display_filters -%}
+        <div class="grid-archive__filters-container" id="main-collection-filters-container">
+          <div id="main-collection-filters" data-id="{{ section.id }}">
+            {%- render 'component-facets', page: search -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="grid-archive__products-grid-container" id="ProductGridContainer">
+        <div
+          class="grid-archive__content grid-archive__content--three-col grid-archive__content--two-col"
+          id="grid-product"
+          data-id="{{ section.id }}"
+        >
+          {%- if search.performed and search.results_count > 0 -%}
+            {%- liquid
+              paginate search.results by 24
+                for item in search.results
+                  case item.object_type
+                    when 'product'
+                      render 'component-card-product' product: item, ratio_image: section.settings.ratio_image, style_card: section.settings.style_card, display_text_card: section.settings.display_text_card, style_button_card: section.settings.settings_style_cta_card, card_cta_product: settings.card_cta_product
+                    when 'article'
+                      render 'component-card-article' article: item, ratio_image: section.settings.ratio_image, style_card: section.settings.style_card, display_text_card: section.settings.display_text_card, style_button_card: section.settings.settings_style_cta_card
+                    when 'page'
+                      render 'component-card-article' article: item, ratio_image: section.settings.ratio_image, style_card: section.settings.style_card, display_text_card: section.settings.display_text_card, style_button_card: section.settings.settings_style_cta_card
+                  endcase
+                endfor
+              render 'component-pagination', paginate: paginate
+              endpaginate
+            -%}
+          {%- else -%}
+            <p class="grid-archive__no-results">{{ 'search.no_results' | t }}</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "t:name.search_results",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_search_results"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_filters",
+      "label": "t:label.enable_filters_false",
+      "info": "t:info.enable_filters_false",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "display_sorting",
+      "label": "t:label.enable_sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "display_grid_size",
+      "label": "t:label.enable_grid_size_interface",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "display_in_stock",
+      "label": "t:label.enable_availability_filter",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_card_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_card_settings"
+    },
+    {
+      "type": "select",
+      "id": "ratio_image",
+      "label": "t:label.image_aspect_ratio",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:label.use_theme_setting"
+        },
+        {
+          "value": "landscape",
+          "label": "t:label.landscape"
+        },
+        {
+          "value": "portrait",
+          "label": "t:label.portrait"
+        },
+        {
+          "value": "square",
+          "label": "t:label.square"
+        },
+        {
+          "value": "widescreen",
+          "label": "t:label.widescreen"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "style_card",
+      "label": "t:label.card_style",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:label.use_theme_setting"
+        },
+        {
+          "value": "no_image",
+          "label": "t:label.no_image"
+        },
+        {
+          "value": "no_padding",
+          "label": "t:label.no_padding"
+        },
+        {
+          "value": "padding",
+          "label": "t:label.padding"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "settings_style_cta_card",
+      "label": "t:label.card_button_style",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:label.use_theme_setting"
+        },
+        {
+          "value": "primary",
+          "label": "t:label.primary"
+        },
+        {
+          "value": "secondary",
+          "label": "t:label.secondary"
+        },
+        {
+          "value": "xl",
+          "label": "t:label.extra_large"
+        },
+        {
+          "value": "plain",
+          "label": "t:label.plain"
+        },
+        {
+          "value": "sm",
+          "label": "t:label.small"
+        },
+        {
+          "value": "sm-secondary",
+          "label": "t:label.small_secondary"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "display_text_card",
+      "label": "t:label.card_text",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:label.use_theme_setting"
+        },
+        {
+          "value": "title_and_excerpt",
+          "label": "t:label.title_and_excerpt"
+        },
+        {
+          "value": "text",
+          "label": "t:label.excerpt_only"
+        },
+        {
+          "value": "title",
+          "label": "t:label.title_only"
+        },
+        {
+          "value": "no_text",
+          "label": "t:label.no_text"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_section_padding_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_padding_settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_mobile_16",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_mobile_16",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_separator_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_separator_settings"
+    },
+    {
+      "type": "select",
+      "id": "style_line_top",
+      "label": "t:label.top_separator_style",
+      "options": [
+        {
+          "value": "dashed",
+          "label": "t:label.dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "t:label.dotted"
+        },
+        {
+          "value": "line",
+          "label": "t:label.line"
+        },
+        {
+          "value": "none",
+          "label": "t:label.none"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "style_line_bottom",
+      "label": "t:label.bottom_separator_style",
+      "options": [
+        {
+          "value": "dashed",
+          "label": "t:label.dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "t:label.dotted"
+        },
+        {
+          "value": "line",
+          "label": "t:label.line"
+        },
+        {
+          "value": "none",
+          "label": "t:label.none"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "color_line",
+      "label": "t:label.separator_color"
+    }
+  ],
+  "templates": [
+    "search"
+  ]
+}
+{% endschema %}

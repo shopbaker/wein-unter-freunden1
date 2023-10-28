@@ -1,0 +1,54 @@
+{%- comment -%}
+  Renders the contact information.
+
+  Usage:
+  {%- render 'component-information-contact'
+    id: id, icon: icon, caption: caption, heading: heading, heading_type: heading_type, subheading: subheading, phone: phone, email: email, address: address, hours_of_operation: hours_of_operation, display_social_media_icons: display_social_media_icons, color_icon: color_icon, color_text: color_text, color_subheading: color_subheading, color_background: color_background
+  -%}
+{%- endcomment -%}
+
+<div
+  id="block-{{ id }}"
+  class="form-contact__information{% if color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %} grid-content__background{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  {%- render 'component-header-block', id: id, icon: icon, caption: caption, heading: heading, heading_type: heading_type, subheading: subheading, color_icon: color_icon, color_text: color_text, color_subheading: color_subheading -%}
+
+  {%- if phone != '' -%}
+    <p>{{ 'sections.contact_form.phone' | t }}: {{ phone }}</p>
+  {%- endif -%}
+  {%- if email != '' -%}
+    <p>
+      {{ 'sections.contact_form.email' | t }}: <a href="mailto:{{ email }}" target="_blank" nofollow>{{ email }}</a>
+    </p>
+  {%- endif -%}
+  {%- if address != '' -%}
+    <h3>{{ 'sections.contact_form.address' | t }}</h3>
+    {{ address }}
+  {%- endif -%}
+
+  {%- if hours_of_operation != '' -%}
+    <h3>{{ 'sections.contact_form.hours_of_operation' | t }}</h3>
+    {{ hours_of_operation }}
+  {%- endif -%}
+  {%- if display_social_media_icons -%}
+    {%- render 'component-icons-social' -%}
+  {%- endif -%}
+</div>
+
+{%- if color_text and color_text != ''and color_text != 'rgba(0,0,0,0)' -%}
+  <style>
+    #block-{{ id }},
+    #block-{{ id }} .grid-content__header h3,
+    #block-{{ id }} .grid-content__header .text-display-xs {
+      color: {{ color_text }}
+    }
+  </style>
+{%- endif -%}
+{%- if color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' -%}
+  <style>
+    #block-{{ id }}.grid-content__background {
+      background: {{ color_background }};
+    }
+  </style>
+{%- endif -%}

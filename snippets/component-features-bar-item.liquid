@@ -1,0 +1,36 @@
+{%- comment -%}
+  Renders an alert bar item.
+
+  Accepts:
+  - link: Alert bar URL
+  - icon: Icon name
+  - title: title of the alert bar
+  - text: subheading of the alert bar
+
+  Usage:
+  {%- render 'component-features-bar-item'
+    link: link,
+    icon: icon,
+    heading: heading,
+    subheading: subheading
+  -%}
+{%- endcomment -%}
+
+<{% if link %}a{% else %}div{% endif %}
+  class="features-bar__item swiper-slide"
+  {%- if link -%}
+    href="{{ link }}"
+  {%- endif -%}
+>
+  {% if icon != '' %}
+    {%- render 'component-icon', icon: icon -%}
+  {% endif %}
+  <div>
+    {%- if heading -%}
+      <strong>{{ heading | escape }}</strong>
+    {%- endif -%}
+    {%- if subheading -%}
+      <p>{{ subheading }}</p>
+    {%- endif -%}
+  </div>
+</{% if link %}a{% else %}div{% endif %}>

@@ -1,0 +1,32 @@
+{%- if section.settings.custom_liquid -%}
+  <div class="section__wrapper">
+    <div class="container ">
+      {{- section.settings.custom_liquid -}}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:name.custom_liquid",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_custom_liquid"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:label.custom_liquid",
+      "info": "t:info.custom_liquid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:name.custom_liquid",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

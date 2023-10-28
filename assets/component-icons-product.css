@@ -1,0 +1,25 @@
+.c-icons-product {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.c-icons-product__icon {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  flex: 1;
+}
+.c-icons-product__description:first-letter {
+  text-transform: capitalize;
+}
+@media (max-width: 47.99em) {
+  .c-icons-product__description {
+    text-align: center;
+  }
+}
+.c-icons-product__description strong {
+  display: block;
+}

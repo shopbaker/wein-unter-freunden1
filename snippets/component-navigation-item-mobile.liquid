@@ -1,0 +1,73 @@
+{%- comment -%}
+  Renders mobile navigation columns.
+
+  Accepts:
+  - link: {Object} Link object
+  - menu: {Object} Menu object
+  - title: {String} Menu with a dropdown menu item title
+  - menu_type: {String} Menu type
+
+  Usage:
+  {%- render 'component-navigation-item-primary'
+    link: block.settings.link,
+    menu: block.settings.menu,
+    title: block.settings.title,
+    menu_type: block.settings.menu_type,
+    display_banner: block.settings.display_banner,
+    heading: block.settings.heading_banner,
+    subheading: block.settings.subheading_banner,
+    button_url: block.settings.button_url_banner,
+    button_text: block.settings.button_text_banner,
+    image_background: block.settings.image_banner
+    id: block.id
+  -%}
+{%- endcomment -%}
+{%- if menu_type == 'no_dropdown' -%}
+  <a class="nav__mobile-accordion-opener" href="{{ link.url }}">
+    {{- link.title -}}
+  </a>
+{%- else -%}
+  <div class="nav__mobile-dropdown-wrapper{% if dropdown_count == 1 %} nav__mobile-dropdown-wrapper--open{% endif %}">
+    <button class="nav__mobile-accordion-opener">
+      {%- if menu_type == 'multi_level_megamenu' -%}
+        {{ title }}
+      {%- else -%}
+        {{ link.title }}
+      {%- endif -%}
+      {% render 'component-icon', icon: 'expand_more' %}
+    </button>
+    {%- if menu_type == 'multi_level_megamenu' -%}
+      {%- assign link = menu -%}
+    {%- endif -%}
+    <div class="nav__mobile-dropdown__content-wrapper">
+      <div class="nav__content__outer">
+        <div class="nav__content">
+          <div class="nav__main-menu">
+            {%- if link.links -%}
+              <ul role="navigation">
+                {%- for link in link.links -%}
+                  <li>
+                    {%- if menu_type == 'simple_dropdown' or link.links == blank -%}
+                      <a href="{{ link.url }}" class="nav__main-menu-link--basic">
+                        {{ link.title }}
+                      </a>
+                    {%- else -%}
+                      <button
+                        aria-expanded="false"
+                        class="nav__main-menu-link"
+                        data-targetmenu="navigation-item-{{ link.title | handleize }}-{{ id }}"
+                      >
+                        {{ link.title }}
+                        {% render 'component-icon', icon: 'chevron_right' %}
+                      </button>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}

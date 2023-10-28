@@ -1,0 +1,28 @@
+{%- if logo -%}
+  {%- assign retina_width = width_logo | times: 2 -%}
+  <a
+    href="{{ routes.root_url }}"
+    {% if display_fill_available %}
+      class="display--fill"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    <span class="visually-hidden">{{ 'accessibility.home' | t }}</span>
+    <img
+      src="{{ logo | image_url: width: retina_width }}"
+      width="{{ width_logo }}"
+      height="{{ width_logo | divided_by: logo.aspect_ratio }}"
+      class="header__logo"
+      alt="Navigate back to {{ shop.name }} homepage"
+    >
+  </a>
+{% else %}
+  <a
+    href="{{ routes.root_url }}"
+    class="header__logo text-lg{% if display_fill_available %} display--fill{% endif %}"
+    style="max-width: {{ width_logo }}px"
+    {{ block.shopify_attributes }}
+  >
+    {{- shop.name -}}
+  </a>
+{% endif %}

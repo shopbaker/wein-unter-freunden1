@@ -1,0 +1,86 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign pick_up_availabilities = current_variant.store_availabilities | where: 'pick_up_enabled', true
+
+  if current_variant.featured_media
+    assign image = current_variant.featured_media
+  else
+    assign image = product.featured_image
+  endif
+-%}
+
+<div id="pickup-availability-modal-{{ id }}" class="pickup-availability">
+  <script src="{{ 'component-pickup-availability.js' | asset_url }}" defer="defer"></script>
+  <link
+    rel="stylesheet"
+    href="{{ 'component-pickup-availability.css' | asset_url }}"
+  >
+
+  <div class="pickup-availability__sidebar">
+    <div>
+      <button id="pickup-availability-close" class="text-lg pickup-availability__close">
+        {%- render 'component-icon', icon: 'chevron_left' -%}
+        {{ 'products.pickup_availability.label' | t -}}
+      </button>
+
+      <div class="pickup-availability__content">
+        <div class="pickup-availability__product-item">
+          <div class="pickup-availability__product-image">
+            <figure class="figure--square" role="none">
+              {{ image | image_url: width: 150, height: 150 | image_tag: class: 'img-absolute', loading: 'lazy' }}
+            </figure>
+          </div>
+          <div class="pickup-availability__product-meta">
+            <div class="pickup-availability__product-info">
+              <div class="text-lg pickup-availability__product-title">{{ current_variant.product.title | escape }}</div>
+              {%- unless current_variant.product.has_only_default_variant -%}
+                <p>
+                  {%- for product_option in current_variant.product.options_with_values -%}
+                    {{ product_option.name | escape }}:&nbsp;
+                    {%- for value in product_option.values -%}
+                      {%- if product_option.selected_value == value -%}
+                        <span>{{ value | escape }}</span>
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- unless forloop.last -%},&nbsp;{%- endunless -%}
+                  {%- endfor -%}
+                </p>
+              {%- endunless -%}
+            </div>
+          </div>
+        </div>
+
+        {%- for availability in pick_up_availabilities -%}
+          <div class="pickup-availability__store">
+            {%- render 'component-icon' icon: 'package' -%}
+            <div>
+              <strong>{{ availability.location.name | escape }}</strong>
+              {%- assign address = availability.location.address -%}
+              <address class="pickup-availability-address">
+                {{ address | format_address }}
+
+                {%- if address.phone.size > 0 -%}
+                  <p>{{ address.phone }}</p>
+                {%- endif -%}
+              </address>
+
+              {%- if availability.available -%}
+                <p class="in-stock">
+                  {%- render 'component-icon', icon: 'check_circle' -%}
+                  {{ 'products.pickup_availability.pick_up_available' | t }},
+                  {{ availability.pick_up_time | downcase }}
+                </p>
+              {%- else -%}
+                <p class="out-of-stock">
+                  {%- render 'component-icon', icon: 'cancel' -%}
+                  {{ 'products.pickup_availability.pick_up_unavailable_at_html' | t: location_name: availability.location.name }}
+                </p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>

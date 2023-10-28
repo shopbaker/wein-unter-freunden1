@@ -1,0 +1,76 @@
+{%- comment -%}
+  Renders an accordion item.
+
+  Accepts:
+  - blog: {Object} Blog object
+  - article: {Object} Article object
+  - show_date: {String} The setting either show the article date or not. If it's not included it will not show the image by default
+  - show_author: {String} The setting either show the article author or not. If it's not included it will not show the author by default
+
+  Usage:
+  {%- render 'component-accordion'
+    title: block.settings.heading,
+    content: block.settings.content,
+    image: block.settings.image,
+    display_open: block.settings.display_open,
+    id: block.id
+  -%}
+{%- endcomment -%}
+
+{%- liquid
+  if page and page != ''
+    assign accordion_content = page.content
+  elsif article and article != ''
+    assign accordion_content = article.content
+  elsif content and content != ''
+    assign accordion_content = content
+  endif
+-%}
+
+{%- if accordion_content and accordion_content != null -%}
+  <details
+    {% if display_open %}
+      open
+    {% endif %}
+    class="accordion__wrapper"
+  >
+    <summary tabindex="0">
+      {%- if title and title != '' -%}
+        <p>{{ title }}</p>
+      {%- elsif page and page != '' -%}
+        <p>{{ page.title }}</p>
+      {%- elsif article and article != '' -%}
+        <p>{{ article.title }}</p>
+      {%- endif -%}
+
+      {%- render 'component-icon', icon: 'expand_more' -%}
+    </summary>
+    <div class="content wysiwyg">
+      {%- if display_imagery == 'top' -%}
+        {%- if image -%}
+          <figure role="none">
+            <noscript class="loading-lazy">
+              {{ image | image_url: width: 1200 | image_tag: width: 600, height: 300, loading: 'lazy' }}
+            </noscript>
+          </figure>
+        {%- endif -%}
+        {%- if url_video or url_video_hosted -%}
+          {%- render 'component-video', url_video: url_video, url_video_hosted: url_video_hosted, type: url_video.type, video_id: url_video.id, ratio_block: ratio_block, video_loop: video_loop, video_mute: video_mute, video_autoplay: video_autoplay, image_video: image_video -%}
+        {%- endif -%}
+      {%- endif -%}
+      {{ accordion_content }}
+      {%- if display_imagery == 'bottom' -%}
+        {%- if image and image != '' -%}
+          <figure role="none">
+            <noscript class="loading-lazy">
+              {{ image | image_url: width: 1200 | image_tag: width: 600, height: 300, loading: 'lazy' }}
+            </noscript>
+          </figure>
+        {%- endif -%}
+        {%- if url_video or url_video_hosted -%}
+          {%- render 'component-video', url_video: url_video, url_video_hosted: url_video_hosted, type: url_video.type, video_id: url_video.id, ratio_block: ratio_block, video_loop: video_loop, video_mute: video_mute, video_autoplay: video_autoplay, image_video: image_video -%}
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </details>
+{%- endif -%}

@@ -1,0 +1,106 @@
+<div class="cart-item desktop" data-variant-id="{{ item.variant_id }}">
+  <div class="cart-item__image">
+    <figure role="none">
+      <img
+        class="img-absolute"
+        src="{{ item.image | image_url: '300x' }}"
+        alt="{{ item.image.alt | escape }}"
+        loading="lazy"
+        width="150"
+        height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
+      >
+    </figure>
+
+    <div>
+      <div class="cart-item__title">
+        <a class="text-lg" href="{{ item.url }}">
+          {{- item.product.title | escape | default: 'products.title' -}}
+        </a>
+      </div>
+
+      {%- if item.properties.size != 0 or item == nil -%}
+        <div class="cart-item__properties u-hide">
+          {%- for property in item.properties -%}
+            <strong>{{ property.first }}: </strong>
+            <span>
+              {%- if property.last contains '/uploads/' -%}
+                <a href="{{ property.last }}" target="_blank">
+                  {{ property.last | split: '/' | last }}
+                </a>
+              {%- elsif property.last != blank -%}
+                {{ property.last }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if item.selling_plan_allocation != nil or item == nil -%}
+        <p class="text-sm cart-item__selling-plan">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+      {%- endif -%}
+
+      <ul role="list" aria-label="{{ 'customer.order.discount' | t }}" class="text-sm cart-item__discounts">
+        {%- if item.discounts -%}
+          {%- for discount in item.discounts -%}
+            <li>
+              {{ discount.title }}
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    </div>
+  </div>
+
+  <div class="cart-item__unit-price text-lg">
+    {%- if item.original_price != item.final_price -%}
+      <dl>
+        <dt class="visually-hidden">
+          {{ 'products.price.regular_price' | t }}
+        </dt>
+        <dd>
+          <s>
+            {{ item.original_price | money }}
+          </s>
+        </dd>
+        <dt class="visually-hidden">
+          {{ 'products.price.sale_price' | t }}
+        </dt>
+        <dd>
+          {{ item.final_price | money }}
+        </dd>
+      </dl>
+    {%- else -%}
+      <span>
+        {{ item.original_price | money }}
+      </span>
+    {%- endif -%}
+  </div>
+
+  <div>
+    {%- render 'component-quantity', qty: item.quantity -%}
+    <div class="cart-item__error text-xs"></div>
+  </div>
+
+  <div class="cart-item__totals text-lg">
+    <div>
+      <span class="total-price">
+        {{ item.final_line_price | money }}
+      </span>
+
+      <div class="text-xs">
+        <span class="visually-hidden">{{ 'products.price.unit_price' | t }}</span>
+        <span class="unit-price">{{ item.variant.unit_price | money }}</span>
+        <span class="visually-hidden">&nbsp;{{ 'accessibility.unit_price_separator' | t }}&nbsp;</span>
+        {%- if item.variant.unit_price_measurement.reference_value != 1 -%}
+          <span class="unit-price-reference-value">{{- item.variant.unit_price_measurement.reference_value -}}</span>
+        {%- endif -%}
+        <span class="unit-price-reference-unit">{{ item.variant.unit_price_measurement.reference_unit }}</span>
+      </div>
+    </div>
+  </div>
+  <button class="cart-item__remove">
+    <a aria-label="{{ 'cart.remove_title' | t: title: item.title }}">
+      {%- render 'component-icon', icon: 'close' -%}
+    </a>
+  </button>
+</div>

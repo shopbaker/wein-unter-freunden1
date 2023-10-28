@@ -1,0 +1,23 @@
+.tooltip {
+  cursor: pointer;
+}
+
+.tooltip-content {
+  visibility: hidden;
+  transition: visibility 0s 0.3s;
+  z-index: 1;
+}
+.tooltip-content__wrapper {
+  opacity: 0;
+  width: 30rem;
+  transform: translateY(-1rem);
+  transition: opacity 0.3s 0s, transform 0.3s 0s;
+}
+.tooltip-content[data-show] {
+  visibility: visible;
+  transition: visibility 0s 0s;
+}
+.tooltip-content[data-show] .tooltip-content__wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}

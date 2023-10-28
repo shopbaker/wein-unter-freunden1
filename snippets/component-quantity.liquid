@@ -1,0 +1,20 @@
+<div class="quantity">
+  <button class="no-js-hidden" name="minus" type="button">
+    <span class="visually-hidden">{{ 'products.quantity.decrease' | t }}</span>
+    {%- render 'component-icon' icon: 'remove' -%}
+  </button>
+  <input
+    type="number"
+    name="quantity"
+    readonly
+    id="Quantity-{{ section.id }}"
+    min="1"
+    aria-label="{{ 'products.quantity.input_label' | t }}"
+    value="{%- if qty != blank -%}{{qty}}{%- else -%}1{%- endif -%}"
+    form="{{ product_form_id }}"
+  >
+  <button class="no-js-hidden" name="plus" type="button">
+    <span class="visually-hidden">{{ 'products.quantity.increase' | t }}</span>
+    {%- render 'component-icon' icon: 'add' -%}
+  </button>
+</div>

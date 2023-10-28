@@ -1,0 +1,18 @@
+<div
+  class="usp"
+  {%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+    style="color: {{ color_text }}"
+  {%- endif -%}
+  {{ block.shopify_attributes }}
+>
+  <div
+    {% if color_icon and color_icon != '' and color_icon != 'rgba(0,0,0,0)' %}
+      style="color: {{ color_icon }}"
+    {% endif %}
+  >
+    {% if icon != '' %}
+      {%- render 'component-icon', icon: icon -%}
+    {% endif %}
+  </div>
+  {{ text }}
+</div>

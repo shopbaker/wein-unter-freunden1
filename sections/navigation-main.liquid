@@ -1,0 +1,579 @@
+{%- assign layout_search = 'none' -%}
+{%- assign layout_header = section.settings.display_menus_full_width -%}
+{%- assign display_features_bar = false -%}
+{%- if section.blocks -%}
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+      {%- when 'mega_menu' -%}
+        {%- assign has_menu = true -%}
+        {% if block.settings.display_features_bar %}
+          {%- assign display_features_bar = true -%}
+        {% endif %}
+      {%- when 'main_menu' -%}
+        {%- assign has_menu = true -%}
+        {% if block.settings.display_features_bar %}
+          {%- assign display_features_bar = true -%}
+        {% endif %}
+      {%- when 'predictive_search' -%}
+        {%- assign has_search = true -%}
+        {%- assign layout_search = block.settings.layout_search -%}
+    {%- endcase -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- if section.blocks.size > 0 -%}
+  <header class="header" data-ux="{{ section.settings.ux_action }}">
+    <div class="container search-layout--{{ layout_search }} fullwidth--{{ layout_header }}">
+      {% if has_menu %}
+        {% render 'component-menu-trigger' %}
+        <div class="nav nav--mobile" aria-hidden="true" aria-label="mobile menu">
+          <div class="container">
+            <div class="nav--mobile__inner-container">
+              <div class="nav--mobile__column">
+                {% assign dropdown_count = 0 %}
+                {%- for block in section.blocks -%}
+                  {%- case block.type -%}
+                    {%- when 'main_menu' -%}
+                      {%- assign menu = block.settings.menu -%}
+                      {%- if menu.links -%}
+                        {%- for link in menu.links -%}
+                          {%- if link.links != blank -%}
+                            {%- for child_link in link.links -%}
+                              {%- if child_link.links != blank -%}
+                                {%- assign menu_type = 'one_level_megamenu' -%}
+                                {% break %}
+                              {%- else -%}
+                                {%- assign menu_type = 'simple_dropdown' -%}
+                                {% break %}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- else -%}
+                            {%- assign menu_type = 'no_dropdown' -%}
+                          {%- endif -%}
+                          {%
+                            if menu_type == 'simple_dropdown'
+                            or menu_type == 'one_level_megamenu'
+                          %}
+                            {% assign dropdown_count = dropdown_count | plus: 1 %}
+                          {% endif %}
+                          {%-
+                            render 'component-navigation-item-mobile',
+                            link: link,
+                            menu_type: menu_type,
+                            dropdown_count: dropdown_count,
+                            id: block.id
+                          -%}
+                        {%- endfor -%}
+                      {%- endif -%}
+                    {%- when 'mega_menu' -%}
+                      {% assign dropdown_count = dropdown_count | plus: 1 %}
+                      {%-
+                        render 'component-navigation-item-mobile',
+                        title: block.settings.title,
+                        menu: block.settings.menu,
+                        menu_type: 'multi_level_megamenu',
+                        dropdown_count: dropdown_count,
+                        id: block.id
+                      -%}
+                  {%- endcase -%}
+                {%- endfor -%}
+              </div>
+              <div class="nav--mobile__column">
+                {%- for block in section.blocks -%}
+                  {%- case block.type -%}
+                    {%- when 'main_menu' -%}
+                      {%- assign menu = block.settings.menu -%}
+                      {%- if menu.links -%}
+                        {%- for link in menu.links -%}
+                          {%- if link.links != blank -%}
+                            {%- for child_link in link.links -%}
+                              {%- if child_link.links != blank -%}
+                                {%- assign menu_type = 'one_level_megamenu' -%}
+                                {% break %}
+                              {%- else -%}
+                                {%- assign menu_type = 'simple_dropdown' -%}
+                                {% break %}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- else -%}
+                            {%- assign menu_type = 'no_dropdown' -%}
+                          {%- endif -%}
+                          {%- unless menu_type == 'simple_dropdown' -%}
+                            {%-
+                              render 'component-navigation-item-mobile-secondary',
+                              link: link,
+                              menu_type: menu_type,
+                              display_banner: block.settings.display_banner,
+                              caption: block.settings.caption,
+                              heading: block.settings.headline,
+                              heading_type: block.settings.heading_type,
+                              subheading: block.settings.subheading,
+                              color_subheading: block.settings.color_subheading,
+                              button_url: block.settings.button_url,
+                              button_text: block.settings.button_text,
+                              style_button: block.settings.style_button,
+                              style_link: block.settings.style_link,
+                              image: block.settings.image,
+                              image_secondary: block.settings.image_secondary,
+                              image_background: block.settings.image_background,
+                              color_icon: block.settings.color_icon,
+                              color_background: block.settings.color_background,
+                              color_text: block.settings.color_text,
+                              alignment_vertical: block.settings.alignment_vertical,
+                              alignment_horizontal: block.settings.alignment_horizontal,
+                              color_overlay: block.settings.color_overlay,
+                              opacity_overlay: block.settings.opacity_overlay,
+                              id: block.id
+                            -%}
+                          {%- endunless -%}
+                        {%- endfor -%}
+                      {%- endif -%}
+                    {%- when 'mega_menu' -%}
+                      {%-
+                        render 'component-navigation-item-mobile-secondary',
+                        menu: block.settings.menu,
+                        title: block.settings.title,
+                        menu_type: 'multi_level_megamenu',
+                        display_banner: block.settings.display_banner,
+                        caption: block.settings.caption,
+                        heading: block.settings.headline,
+                        heading_type: block.settings.heading_type,
+                        subheading: block.settings.subheading,
+                        color_subheading: block.settings.color_subheading,
+                        button_url: block.settings.button_url,
+                        button_text: block.settings.button_text,
+                        style_button: block.settings.style_button,
+                        style_link: block.settings.style_link,
+                        image: block.settings.image,
+                        image_secondary: block.settings.image_secondary,
+                        image_background: block.settings.image_background,
+                        color_icon: block.settings.color_icon,
+                        color_background: block.settings.color_background,
+                        color_text: block.settings.color_text,
+                        alignment_vertical: block.settings.alignment_vertical,
+                        alignment_horizontal: block.settings.alignment_horizontal,
+                        color_overlay: block.settings.color_overlay,
+                        opacity_overlay: block.settings.opacity_overlay,
+                        display_view_all: block.settings.display_view_all,
+                        id: block.id
+                      -%}
+                  {%- endcase -%}
+                {%- endfor -%}
+              </div>
+            </div>
+            {%-
+              if display_features_bar and
+              settings.heading_1 != ''
+              or settings.heading_2 != ''
+              or settings.heading_3 != ''
+              or settings.heading_4 != ''
+            -%}
+              <section class="features-bar features-bar--nav">
+                <div class="features-bar__wrapper">
+                  <div class="features-bar__inner-container swiper-all">
+                    <div class="swiper-wrapper">
+                      {%- liquid
+                        if settings.heading_1 != ''
+                          render 'component-features-bar-item', link: settings.link_1, icon: settings.icon_1, heading: settings.heading_1, subheading: settings.subheading_1
+                        endif
+                        if settings.heading_2 != ''
+                          render 'component-features-bar-item', link: settings.link_2, icon: settings.icon_2, heading: settings.heading_2, subheading: settings.subheading_2
+                        endif
+                        if settings.heading_3 != ''
+                          render 'component-features-bar-item', link: settings.link_3, icon: settings.icon_3, heading: settings.heading_3, subheading: settings.subheading_3
+                        endif
+                        if settings.heading_4 != ''
+                          render 'component-features-bar-item', link: settings.link_4, icon: settings.icon_4, heading: settings.heading_4, subheading: settings.subheading_4
+                        endif
+                      -%}
+                    </div>
+                    <span class="icon swiper-button-prev no-js-hidden">chevron_left</span>
+                    <span class="icon swiper-button-next no-js-hidden">chevron_right</span>
+                  </div>
+                </div>
+              </section>
+              <style>
+                {%- if settings.color_icon_features and settings.color_icon_features != '' and settings.color_icon_features != 'rgba(0,0,0,0)' -%}
+                  .features-bar--nav .icon {
+                    color: {{ settings.color_icon_features }};
+                  }
+                  .features-bar--nav .features-bar__item .icon {
+                    border-color: {{ settings.color_icon_features }};
+                  }
+                {%- endif -%}
+                {%- if settings.color_text_features and settings.color_text_features != '' and settings.color_text_features != 'rgba(0,0,0,0)' -%}
+                  .features-bar--nav .features-bar__item strong,
+                  .features-bar--nav .features-bar__item p {
+                    color: {{ settings.color_text_features }};
+                  }
+                {%- endif -%}
+                {%- if settings.color_background_features and settings.color_background_features != '' and settings.color_background_features != 'rgba(0,0,0,0)' or settings.color_background_gradient_features != '' %}
+                  .features-bar--nav .features-bar__wrapper {
+                    background: {% if settings.color_background_gradient_features != '' %}{{ settings.color_background_gradient_features }}{% elsif settings.color_background_features and settings.color_background_features != '' and settings.color_background_features != 'rgba(0,0,0,0)' %}{{ settings.color_background_features }}{% endif %};
+                  }
+                {%- endif -%}
+              </style>
+            {%- endif -%}
+          </div>
+        </div>
+      {% endif %}
+      {% if has_search %}
+        <button
+          class="search-trigger search-trigger--mobile"
+          data-predictive-search="predictive-search-header"
+          aria-label="{{ 'search.label' | t }}"
+        >
+          {% render 'component-icon', icon: 'search', icon_class: 'search-icon' %}
+        </button>
+      {% endif %}
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'mega_menu' -%}
+            {% unless section.settings.display_menus_full_width %}
+              <div
+                class="header__menu{% if block.settings.display_fill_available %} display--fill{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                {%-
+                  render 'component-navigation-item-primary',
+                  menu: block.settings.menu,
+                  title: block.settings.title,
+                  menu_type: 'multi_level_megamenu',
+                  display_banner: block.settings.display_banner,
+                  display_features_bar: block.settings.display_features_bar,
+                  icon: block.settings.icon,
+                  caption: block.settings.caption,
+                  heading: block.settings.headline,
+                  heading_type: block.settings.heading_type,
+                  subheading: block.settings.subheading,
+                  color_subheading: block.settings.color_subheading,
+                  button_url: block.settings.button_url,
+                  button_text: block.settings.button_text,
+                  style_button: block.settings.style_button,
+                  style_link: block.settings.style_link,
+                  image: block.settings.image,
+                  image_secondary: block.settings.image_secondary,
+                  image_background: block.settings.image_background,
+                  video_background: block.settings.video_background,
+                  color_icon: block.settings.color_icon,
+                  color_background: block.settings.color_background,
+                  color_text: block.settings.color_text,
+                  alignment_vertical: block.settings.alignment_vertical,
+                  alignment_horizontal: block.settings.alignment_horizontal,
+                  color_overlay: block.settings.color_overlay,
+                  opacity_overlay: block.settings.opacity_overlay,
+                  click_ux: section.settings.ux_action,
+                  display_view_all: block.settings.display_view_all,
+                  id: block.id
+                -%}
+              </div>
+            {% endunless %}
+          {%- when 'main_menu' -%}
+            {% unless section.settings.display_menus_full_width %}
+              {%- assign menu = block.settings.menu -%}
+              {%- if menu.links -%}
+                <div
+                  class="header__menu{% if block.settings.display_fill_available %} display--fill{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+                  {%- for link in menu.links -%}
+                    {%- if link.links != blank -%}
+                      {%- for child_link in link.links -%}
+                        {%- if child_link.links != blank -%}
+                          {%- assign menu_type = 'one_level_megamenu' -%}
+                          {% break %}
+                        {%- else -%}
+                          {%- assign menu_type = 'simple_dropdown' -%}
+                          {% break %}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- else -%}
+                      {%- assign menu_type = 'no_dropdown' -%}
+                    {%- endif -%}
+                    {%-
+                      render 'component-navigation-item-primary',
+                      link: link,
+                      menu_type: menu_type,
+                      display_banner: block.settings.display_banner,
+                      display_features_bar: block.settings.display_features_bar,
+                      icon: block.settings.icon,
+                      caption: block.settings.caption,
+                      heading: block.settings.headline,
+                      heading_type: block.settings.heading_type,
+                      subheading: block.settings.subheading,
+                      color_subheading: block.settings.color_subheading,
+                      button_url: block.settings.button_url,
+                      button_text: block.settings.button_text,
+                      style_button: block.settings.style_button,
+                      style_link: block.settings.style_link,
+                      image: block.settings.image,
+                      image_secondary: block.settings.image_secondary,
+                      image_background: block.settings.image_background,
+                      video_background: block.settings.video_background,
+                      color_icon: block.settings.color_icon,
+                      color_background: block.settings.color_background,
+                      color_text: block.settings.color_text,
+                      alignment_vertical: block.settings.alignment_vertical,
+                      alignment_horizontal: block.settings.alignment_horizontal,
+                      color_overlay: block.settings.color_overlay,
+                      opacity_overlay: block.settings.opacity_overlay,
+                      click_ux: section.settings.ux_action,
+                      id: block.id
+                    -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            {%- endunless -%}
+          {%- when 'logo' -%}
+            {%- render 'component-logo', logo: block.settings.logo, width_logo: block.settings.width_logo, display_fill_available: block.settings.display_fill_available -%}
+          {%- when 'predictive_search' -%}
+            {%- unless block.settings.layout_search == 'full' -%}
+              <div
+                class="header__search{% if block.settings.display_fill_available or block.settings.layout_search == "fill" %} display--fill{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <button
+                  class="search-trigger search-trigger--mobile"
+                  data-predictive-search="predictive-search-header"
+                  aria-label="{{ 'search.label' | t }}"
+                >
+                  {% render 'component-icon', icon: 'search', icon_class: 'search-icon' %}
+                </button>
+                {%
+                  render 'component-search-predictive',
+                  id: 'header',
+                  parent: 'header',
+                  display_banner: block.settings.display_banner,
+                  display_features_bar: block.settings.display_features_bar,
+                  placeholder: block.settings.placeholder,
+                  button_text_search: block.settings.button_text_search,
+                  results_secondary: block.settings.results_secondary,
+                  results_default: block.settings.results_default,
+                  icon: block.settings.icon,
+                  caption: block.settings.caption,
+                  heading: block.settings.headline,
+                  heading_type: block.settings.heading_type,
+                  subheading: block.settings.subheading,
+                  color_subheading: block.settings.color_subheading,
+                  button_url: block.settings.button_url,
+                  button_text: block.settings.button_text,
+                  style_button: block.settings.style_button,
+                  style_link: block.settings.style_link,
+                  image: block.settings.image,
+                  image_secondary: block.settings.image_secondary,
+                  image_background: block.settings.image_background,
+                  video_background: block.settings.video_background,
+                  color_icon: block.settings.color_icon,
+                  color_background: block.settings.color_background,
+                  color_text: block.settings.color_text,
+                  alignment_vertical: block.settings.alignment_vertical,
+                  alignment_horizontal: block.settings.alignment_horizontal,
+                  color_overlay: block.settings.color_overlay,
+                  opacity_overlay: block.settings.opacity_overlay,
+                  ratio_block: block.settings.ratio_block,
+                  fit_object: block.settings.fit_object
+                %}
+              </div>
+            {%- endunless -%}
+          {%- when 'cart' -%}
+            <div
+              class="header__icons{% if block.settings.display_fill_available %} display--fill{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              <a
+                href="{{ routes.cart_url }}"
+                class="header__icons--cart-open {% if settings.display_mini_cart %}has-js-hidden{% endif %}"
+                ><span class="visually-hidden">{{ 'cart.view_cart' | t }}</span>
+                {%- render 'component-icon', icon: 'shopping_cart' -%}
+                <span class="cart-count">{{ cart.item_count }}</span></a
+              >
+              {%- if settings.display_mini_cart -%}
+                <button
+                  id="cart-open"
+                  class="header__icons--cart-open no-js-hidden"
+                >
+                  <span class="visually-hidden">{{ 'cart.view_cart' | t }}</span>
+                  {%- render 'component-icon', icon: 'shopping_cart' -%}
+                  <span style="display: none;" class="cart-count">{{ cart.item_count }}</span>
+                </button>
+              {%- endif -%}
+            </div>
+            {%- if settings.display_mini_cart -%}
+              {%-
+                render 'component-cart-drawer'
+                heading: settings.heading,
+                subheading: settings.subheading,
+                button_text: settings.button_text,
+                button_url: settings.button_url,
+                display_note: settings.display_note,
+                display_free_shipping: settings.display_free_shipping,
+                text_announcement: settings.text_announcement,
+                icon_announcement: settings.icon_announcement,
+                color_text: settings.text_color_cart,
+                color_icon: settings.icon_color_cart,
+                icon_usp: settings.icon_usp,
+                cta_cart: settings.cta_cart
+              -%}
+            {%- endif -%}
+          {%- when 'account_icon' -%}
+            <div
+              class="header__icons{% if block.settings.display_fill_available %} display--fill{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+                ><span class="visually-hidden">{{ 'customer.account.title' | t }}</span>
+                {%- render 'component-icon', icon: 'account_circle' -%}
+              </a>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'predictive_search' -%}
+          {%- if block.settings.layout_search == 'full' -%}
+            <div class="container">
+              <div class="header__search header__search--fullwidth" {{ block.shopify_attributes }}>
+                <button
+                  class="search-trigger search-trigger--mobile"
+                  data-predictive-search="predictive-search-header"
+                  aria-label="{{ 'search.label' | t }}"
+                >
+                  {% render 'component-icon', icon: 'search', icon_class: 'search-icon' %}
+                </button>
+                {%
+                  render 'component-search-predictive',
+                  id: 'header',
+                  parent: 'header',
+                  display_banner: block.settings.display_banner,
+                  display_features_bar: block.settings.display_features_bar,
+                  placeholder: block.settings.placeholder,
+                  button_text_search: block.settings.button_text_search,
+                  results_secondary: block.settings.results_secondary,
+                  results_default: block.settings.results_default,
+                  icon: block.settings.icon,
+                  caption: block.settings.caption,
+                  heading: block.settings.headline,
+                  heading_type: block.settings.heading_type,
+                  subheading: block.settings.subheading,
+                  color_subheading: block.settings.color_subheading,
+                  button_url: block.settings.button_url,
+                  button_text: block.settings.button_text,
+                  style_button: block.settings.style_button,
+                  style_link: block.settings.style_link,
+                  image: block.settings.image,
+                  image_secondary: block.settings.image_secondary,
+                  image_background: block.settings.image_background,
+                  video_background: block.settings.video_background,
+                  color_icon: block.settings.color_icon,
+                  color_background: block.settings.color_background,
+                  color_text: block.settings.color_text,
+                  alignment_vertical: block.settings.alignment_vertical,
+                  alignment_horizontal: block.settings.alignment_horizontal,
+                  color_overlay: block.settings.color_overlay,
+                  opacity_overlay: block.settings.opacity_overlay,
+                  ratio_block: block.settings.ratio_block,
+                  fit_object: block.settings.fit_object
+                %}
+              </div>
+            </div>
+          {%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+    {%- if section.settings.display_menus_full_width -%}
+      <div class="container">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'mega_menu' -%}
+              {%-
+                render 'component-navigation-item-primary',
+                menu: block.settings.menu,
+                title: block.settings.title,
+                menu_type: 'multi_level_megamenu',
+                display_banner: block.settings.display_banner,
+                display_features_bar: block.settings.display_features_bar,
+                icon: block.settings.icon,
+                caption: block.settings.caption,
+                heading: block.settings.headline,
+                heading_type: block.settings.heading_type,
+                subheading: block.settings.subheading,
+                color_subheading: block.settings.color_subheading,
+                button_url: block.settings.button_url,
+                button_text: block.settings.button_text,
+                style_button: block.settings.style_button,
+                style_link: block.settings.style_link,
+                image: block.settings.image,
+                image_secondary: block.settings.image_secondary,
+                image_background: block.settings.image_background,
+                video_background: block.settings.video_background,
+                color_icon: block.settings.color_icon,
+                color_background: block.settings.color_background,
+                color_text: block.settings.color_text,
+                alignment_vertical: block.settings.alignment_vertical,
+                alignment_horizontal: block.settings.alignment_horizontal,
+                color_overlay: block.settings.color_overlay,
+                opacity_overlay: block.settings.opacity_overlay,
+                click_ux: section.settings.ux_action,
+                display_view_all: block.settings.display_view_all,
+                id: block.id
+              -%}
+            {%- when 'main_menu' -%}
+              {%- assign menu = block.settings.menu -%}
+              {%- if menu.links -%}
+                <div class="header__menu">
+                  {%- for link in menu.links -%}
+                    {%- if link.links != blank -%}
+                      {%- for child_link in link.links -%}
+                        {%- if child_link.links != blank -%}
+                          {%- assign menu_type = 'one_level_megamenu' -%}
+                          {% break %}
+                        {%- else -%}
+                          {%- assign menu_type = 'simple_dropdown' -%}
+                          {% break %}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- else -%}
+                      {%- assign menu_type = 'no_dropdown' -%}
+                    {%- endif -%}
+                    {%-
+                      render 'component-navigation-item-primary',
+                      link: link,
+                      menu_type: menu_type,
+                      display_banner: block.settings.display_banner,
+                      display_features_bar: block.settings.display_features_bar,
+                      icon: block.settings.icon,
+                      caption: block.settings.caption,
+                      heading: block.settings.headline,
+                      heading_type: block.settings.heading_type,
+                      subheading: block.settings.subheading,
+                      color_subheading: block.settings.color_subheading,
+                      button_url: block.settings.button_url,
+                      button_text: block.settings.button_text,
+                      style_button: block.settings.style_button,
+                      style_link: block.settings.style_link,
+                      image: block.settings.image,
+                      image_secondary: block.settings.image_secondary,
+                      image_background: block.settings.image_background,
+                      video_background: block.settings.video_background,
+                      color_icon: block.settings.color_icon,
+                      color_background: block.settings.color_background,
+                      color_text: block.settings.color_text,
+                      alignment_vertical: block.settings.alignment_vertical,
+                      alignment_horizontal: block.settings.alignment_horizontal,
+                      color_overlay: block.settings.color_overlay,
+                      opacity_overlay: block.settings.opacity_overlay,
+                      click_ux: section.settings.ux_action,
+                      id: block.id
+                    -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </header>
+{%- endif -%}
+
+{% schema %}
+{"name": "t:name.main_navigation", "tag": "div", "settings": [{"type": "paragraph", "content": "t:info.intro_section_navigation"},{"type": "radio", "id": "ux_action", "label": "t:label.menu_open_action", "info": "t:info.menu_open_action", "options": [{ "value": "click", "label": "t:label.on_click"},{ "value": "hover", "label": "t:label.on_hover"}], "default": "click"},{"type": "checkbox", "id": "display_menus_full_width", "label": "t:label.show_full-width_menus", "info": "t:info.show_full-width_menus"}], "blocks": [{"type": "account_icon", "name": "t:name.account_icon", "limit": 1, "settings": [{"type": "paragraph", "content": "t:info.intro_account_icon"},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"}]},{"type": "cart", "name": "t:name.cart", "limit": 1, "settings": [{"type": "paragraph", "content": "t:info.intro_block_cart"},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"}]},{"type": "logo", "name": "t:name.logo", "settings": [{"type": "paragraph", "content": "t:info.intro_block_logo"},{"type": "image_picker", "id": "logo", "label": "t:label.logo"},{"type": "range", "id": "width_logo", "min": 4, "max": 400, "step": 4, "unit": "px", "label": "t:label.logo_width", "default": 48},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"}]},{"type": "main_menu", "name": "t:name.main_menu", "limit": 1, "settings": [{"type": "paragraph", "content": "t:info.intro_main_menu"},{"type": "link_list", "id": "menu", "label": "t:label.menu", "default": "main-menu"},{"type": "checkbox", "id": "display_features_bar", "label": "t:label.show_features_bar_menu_item_false", "info": "t:info.show_features_bar_menu_item_false"},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"},{"type": "header", "content": "t:info.header_banner_settings"},{"type": "paragraph", "content": "t:info.intro_banner_settings"},{"type": "checkbox", "id": "display_banner", "label": "t:label.show_banner_menu_item", "info": "t:info.show_banner_menu_item"},{"type": "select", "id": "alignment_vertical", "label": "t:label.vertical_alignment", "options": [{ "value": "top", "label": "t:label.top"},{ "value": "center", "label": "t:label.middle"},{ "value": "bottom", "label": "t:label.bottom"}], "default": "bottom"},{"type": "select", "id": "alignment_horizontal", "label": "t:label.horizontal_alignment", "options": [{ "value": "left", "label": "t:label.left"},{ "value": "center", "label": "t:label.center"},{ "value": "right", "label": "t:label.right"}]},{"type": "text", "id": "icon", "label": "t:label.icon", "info": "t:info.icon"},{"type": "text", "id": "caption", "label": "t:label.caption"},{"type": "text", "id": "headline", "label": "t:label.headline_banner", "default": "Banner headline"},{"type": "richtext", "id": "subheading", "label": "t:label.subheading"},{"type": "url", "id": "button_url", "label": "t:label.button_link"},{"type": "text", "id": "button_text", "label": "t:label.button_text", "default": "Button text"},{"type": "select", "id": "style_button", "label": "t:label.button_style", "options": [{ "value": "primary", "label": "t:label.primary"},{ "value": "secondary", "label": "t:label.secondary"},{ "value": "xl", "label": "t:label.extra_large"},{ "value": "plain", "label": "t:label.plain"},{ "value": "sm", "label": "t:label.small"},{ "value": "sm-secondary", "label": "t:label.small_secondary"}]},{"type": "select", "id": "style_link", "label": "t:label.link_style", "info": "t:info.link_style", "options": [{ "value": "link-button", "label": "t:label.button"},{ "value": "link-block", "label": "t:label.full_block"},{ "value": "link-full-button", "label": "t:label.full_block_with_button"}]},{"type": "image_picker", "id": "image_background", "label": "t:label.background_image"},{"type": "video", "id": "video_background", "label": "t:label.background_video", "info": "t:info.background_video"},{"type": "header", "content": "t:info.header_banner_color_settings"},{"type": "paragraph", "content": "t:info.intro_color_settings"},{"type": "color", "id": "color_icon", "label": "t:label.icon_color"},{"type": "color", "id": "color_text", "label": "t:label.text_color"},{"type": "color", "id": "color_subheading", "label": "t:label.subheading_color"},{"type": "color", "id": "color_background", "label": "t:label.background_color"},{"type": "color_background", "id": "color_background_gradient", "label": "t:label.background_gradient"},{"type": "color", "id": "color_overlay", "label": "t:label.overlay_color"},{"type": "range", "id": "opacity_overlay", "min": 0, "max": 100, "step": 4, "unit": "%", "label": "t:label.overlay_opacity", "default": 48},{"type": "header", "content": "t:info.header_editor_settings"},{"type": "paragraph", "content": "t:info.intro_editor_settings"},{"type": "text", "id": "title", "label": "t:label.title_main_menu", "default": "Main menu"}]},{"type": "mega_menu", "name": "t:name.mega_menu", "settings": [{"type": "paragraph", "content": "t:info.intro_mega_menu"},{"type": "text", "id": "title", "label": "t:label.title_mega_menu", "info": "t:info.title_mega_menu", "default": "Mega menu"},{"type": "link_list", "id": "menu", "label": "t:label.menu", "default": "main-menu"},{"type": "checkbox", "id": "display_features_bar", "label": "t:label.show_features_bar_menu_item_true", "info": "t:info.show_features_bar_menu_item_true", "default": true},{"type": "checkbox", "id": "display_view_all", "label": "t:label.show_view_all_buttons", "info": "t:info.show_view_all_buttons", "default": true},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"},{"type": "header", "content": "t:info.header_banner_settings"},{"type": "paragraph", "content": "t:info.intro_banner_settings"},{"type": "checkbox", "id": "display_banner", "label": "t:label.show_banner_menu_item", "info": "t:info.show_banner_menu_item"},{"type": "select", "id": "alignment_vertical", "label": "t:label.vertical_alignment", "options": [{ "value": "top", "label": "t:label.top"},{ "value": "center", "label": "t:label.middle"},{ "value": "bottom", "label": "t:label.bottom"}], "default": "bottom"},{"type": "select", "id": "alignment_horizontal", "label": "t:label.horizontal_alignment", "options": [{ "value": "left", "label": "t:label.left"},{ "value": "center", "label": "t:label.center"},{ "value": "right", "label": "t:label.right"}]},{"type": "text", "id": "icon", "label": "t:label.icon", "info": "t:info.icon"},{"type": "text", "id": "caption", "label": "t:label.caption"},{"type": "text", "id": "headline", "label": "t:label.headline_banner", "default": "Banner headline"},{"type": "richtext", "id": "subheading", "label": "t:label.subheading"},{"type": "url", "id": "button_url", "label": "t:label.button_link"},{"type": "text", "id": "button_text", "label": "t:label.button_text", "default": "Button text"},{"type": "select", "id": "style_button", "label": "t:label.button_style", "options": [{ "value": "primary", "label": "t:label.primary"},{ "value": "secondary", "label": "t:label.secondary"},{ "value": "xl", "label": "t:label.extra_large"},{ "value": "plain", "label": "t:label.plain"},{ "value": "sm", "label": "t:label.small"},{ "value": "sm-secondary", "label": "t:label.small_secondary"}]},{"type": "select", "id": "style_link", "label": "t:label.link_style", "info": "t:info.link_style", "options": [{ "value": "link-button", "label": "t:label.button"},{ "value": "link-block", "label": "t:label.full_block"},{ "value": "link-full-button", "label": "t:label.full_block_with_button"}]},{"type": "image_picker", "id": "image_background", "label": "t:label.background_image"},{"type": "video", "id": "video_background", "label": "t:label.background_video", "info": "t:info.background_video"},{"type": "header", "content": "t:info.header_banner_color_settings"},{"type": "paragraph", "content": "t:info.intro_color_settings"},{"type": "color", "id": "color_icon", "label": "t:label.icon_color"},{"type": "color", "id": "color_text", "label": "t:label.text_color"},{"type": "color", "id": "color_subheading", "label": "t:label.subheading_color"},{"type": "color", "id": "color_background", "label": "t:label.background_color"},{"type": "color_background", "id": "color_background_gradient", "label": "t:label.background_gradient"},{"type": "color", "id": "color_overlay", "label": "t:label.overlay_color"},{"type": "range", "id": "opacity_overlay", "min": 0, "max": 100, "step": 4, "unit": "%", "label": "t:label.overlay_opacity", "default": 48}]},{"type": "predictive_search", "name": "t:name.predictive_search", "settings": [{"type": "paragraph", "content": "t:info.intro_settings_predictive_search"},{"type": "text", "id": "placeholder", "label": "t:label.placeholder_text", "default": "Enter your search terms"},{"type": "text", "id": "button_text_search", "label": "t:label.button_text_search", "default": "Search"},{"type": "select", "id": "layout_search", "label": "t:label.layout", "options": [{ "value": "fill", "label": "t:label.stretch_to_fill"},{ "value": "full", "label": "t:label.full_width"},{ "value": "icon", "label": "t:label.icon_only"},{ "value": "small", "label": "t:label.small_field"}], "default": "fill"},{"type": "checkbox", "id": "display_fill_available", "label": "t:label.fill_available_space", "info": "t:info.fill_available_space"},{"type": "header", "content": "t:info.header_search_window"},{"type": "paragraph", "content": "t:info.intro_search_window"},{"type": "checkbox", "id": "display_features_bar", "label": "t:label.show_features_bar", "default": true},{"type": "link_list", "id": "results_default", "label": "t:label.default_results", "info": "t:info.default_results", "default": "main-menu"},{"type": "link_list", "id": "results_secondary", "label": "t:label.secondary_default_results", "info": "t:info.secondary_default_results", "default": "main-menu"},{"type": "header", "content": "t:info.header_banner_settings"},{"type": "paragraph", "content": "t:info.intro_banner_settings_search"},{"type": "checkbox", "id": "display_banner", "label": "t:label.show_banner"},{"type": "select", "id": "alignment_vertical", "label": "t:label.vertical_alignment", "options": [{ "value": "top", "label": "t:label.top"},{ "value": "center", "label": "t:label.middle"},{ "value": "bottom", "label": "t:label.bottom"}], "default": "bottom"},{"type": "select", "id": "alignment_horizontal", "label": "t:label.horizontal_alignment", "options": [{ "value": "left", "label": "t:label.left"},{ "value": "center", "label": "t:label.center"},{ "value": "right", "label": "t:label.right"}]},{"type": "text", "id": "icon", "label": "t:label.icon", "info": "t:info.icon"},{"type": "text", "id": "caption", "label": "t:label.caption"},{"type": "text", "id": "headline", "label": "t:label.headline_banner", "default": "Banner headline"},{"type": "richtext", "id": "subheading", "label": "t:label.subheading"},{"type": "url", "id": "button_url", "label": "t:label.button_link"},{"type": "text", "id": "button_text", "label": "t:label.button_text", "default": "Button text"},{"type": "select", "id": "style_button", "label": "t:label.button_style", "options": [{ "value": "primary", "label": "t:label.primary"},{ "value": "secondary", "label": "t:label.secondary"},{ "value": "xl", "label": "t:label.extra_large"},{ "value": "plain", "label": "t:label.plain"},{ "value": "sm", "label": "t:label.small"},{ "value": "sm-secondary", "label": "t:label.small_secondary"}]},{"type": "select", "id": "style_link", "label": "t:label.link_style", "info": "t:info.link_style", "options": [{ "value": "link-button", "label": "t:label.button"},{ "value": "link-block", "label": "t:label.full_block"},{ "value": "link-full-button", "label": "t:label.full_block_with_button"}]},{"type": "image_picker", "id": "image_background", "label": "t:label.background_image"},{"type": "video", "id": "video_background", "label": "t:label.background_video", "info": "t:info.background_video"},{"type": "header", "content": "t:info.header_banner_color_settings"},{"type": "paragraph", "content": "t:info.intro_color_settings"},{"type": "color", "id": "color_icon", "label": "t:label.icon_color"},{"type": "color", "id": "color_text", "label": "t:label.text_color"},{"type": "color", "id": "color_subheading", "label": "t:label.subheading_color"},{"type": "color", "id": "color_background", "label": "t:label.background_color"},{"type": "color_background", "id": "color_background_gradient", "label": "t:label.background_gradient"},{"type": "color", "id": "color_overlay", "label": "t:label.overlay_color"},{"type": "range", "id": "opacity_overlay", "min": 0, "max": 100, "step": 4, "unit": "%", "label": "t:label.overlay_opacity", "default": 48},{"type": "header", "content": "t:info.header_editor_settings"},{"type": "paragraph", "content": "t:info.intro_editor_settings"},{"type": "text", "id": "title", "label": "t:label.editor_title_search", "info": "t:info.editor_title_search", "default": "Predictive search"}]}], "presets": [{"name": "t:name.main_navigation", "blocks": []}]}
+{% endschema %}

@@ -1,0 +1,45 @@
+.c-stock-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+@media (min-width: 48em) {
+  .c-stock-status {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
+.c-stock-status.in-stock p.in-stock {
+  display: flex;
+}
+.c-stock-status.in-stock p.in-stock span.icon {
+  color: #00aa00;
+}
+.c-stock-status.in-stock p.out-of-stock {
+  display: none;
+}
+.c-stock-status.in-stock p.out-of-stock span.icon {
+  color: #aa0000;
+}
+.c-stock-status p {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.c-stock-status p.in-stock {
+  display: none;
+}
+.c-stock-status p span {
+  margin: 0 0.8rem 0 0;
+}
+.c-stock-status p.in-stock .icon {
+  color: rgba(var(--color-text), 1);
+}
+.c-stock-status p.low-stock .icon {
+  color: #5067b0;
+}
+.c-stock-status p.out-of-stock .icon {
+  color: #fc7053;
+}

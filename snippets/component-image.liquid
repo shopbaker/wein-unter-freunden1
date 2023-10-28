@@ -1,0 +1,32 @@
+{%- comment -%}
+    Renders an image component.
+
+    Accepts:
+    - image
+    - link
+
+    Usage:
+    {%- render 'component-image'
+      image: image,
+      link: link,
+      ratio_block: ratio_block,
+      width_image: width_image
+    -%}
+{%- endcomment -%}
+{%- assign width_image_double = width_image | times: 2 -%}
+{%- assign figure_class = ratio_block | prepend: 'figure--' -%}
+{%- assign image_class = style_image | prepend: ' image--' | prepend: 'object-fit--cover' -%}
+{%- assign placeholder_image_class = image_class | append: ' img-placeholder' -%}
+{%- if link -%}<a href="{{ link }}">{%- endif -%}
+  {%- if image -%}
+    <figure class="{{ figure_class }}" style="display: flex; justify-content: {{ alignment_horizontal }};width: {{ width_image }}px;{%- if alignment_horizontal == 'right' -%}margin: 0 0 0 auto;{%- elsif alignment_horizontal == 'center' -%}margin: 0 auto;{%- endif -%}" role="none">
+      <noscript class="loading-lazy">
+        {{ image | image_url: width: width_image_double | image_tag: width: width_image, class: image_class, loading: 'lazy' }}
+      </noscript>
+    </figure>
+  {%- else -%}
+    <figure class="{{ figure_class }}" style="display: flex;justify-content: {{ alignment_horizontal }};width: {{ width_image }}px;{%- if alignment_horizontal == 'right' -%}margin: 0 0 0 auto;{%- elsif alignment_horizontal == 'center' -%}margin: 0 auto;{%- endif -%}" role="none">
+      {{ 'image' | placeholder_svg_tag: placeholder_image_class }}
+    </figure>
+  {%- endif -%}
+{%- if link -%}</a>{%- endif -%}

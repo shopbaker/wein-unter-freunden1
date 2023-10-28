@@ -1,0 +1,272 @@
+{%- comment -%}
+  Passes global shopify settings to CSS custom properties and
+  Theme global object. Use good old ES5 in this file!
+
+  Usage:
+  {%- render 'head-settings' -%}
+
+  Warning:
+    This file is mounted to the global settings files in
+    'src/styles/settings' directory, any modification need
+    to also be applied to the other file and vice versa.
+{%- endcomment -%}
+
+{%- if settings.font_custom_service and settings.font_custom_service != '' -%}
+  {{ settings.font_custom_service }}
+{%- endif -%}
+
+{%- if settings.font_custom_hosted_woff and settings.font_custom_hosted_woff != '' or settings.font_custom_hosted_woff2 and settings.font_custom_hosted_woff2 != '' -%}
+  {%- style -%}
+    @font-face {
+      font-family: '{{ settings.font_custom_hosted_name }}';
+      src:  {% if settings.font_custom_hosted_woff2 and settings.font_custom_hosted_woff2 != '' %}url('{{ settings.font_custom_hosted_woff2 }}') format('woff2'){%- if settings.font_custom_hosted_woff and settings.font_custom_hosted_woff != '' -%},{%- else -%};{%- endif -%}{%- endif -%}
+      {%- if settings.font_custom_hosted_woff and settings.font_custom_hosted_woff != '' -%}url('{{ settings.font_custom_hosted_woff }}') format('woff');{%- endif -%}
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+{%- liquid
+  assign font_body_bold = settings.font_body | font_modify: 'weight', '600'
+  assign font_body_medium = settings.font_body | font_modify: 'weight', '500'
+  assign font_body_italic = settings.font_body | font_modify: 'style', 'italic'
+-%}
+
+{%- style -%}
+  {{ settings.font_body | font_face: font_display: 'swap' }}
+  {{ font_body_bold | font_face: font_display: 'swap' }}
+  {{ font_body_medium | font_face: font_display: 'swap' }}
+  {{ font_body_italic | font_face: font_display: 'swap' }}
+  {{ settings.font_caption | font_face: font_display: 'swap' }}
+  {{ settings.font_button | font_face: font_display: 'swap' }}
+  {{ settings.font_h1 | font_face: font_display: 'swap' }}
+  {{ settings.font_h2 | font_face: font_display: 'swap' }}
+  {{ settings.font_h3 | font_face: font_display: 'swap' }}
+  {{ settings.font_h4 | font_face: font_display: 'swap' }}
+  {{ settings.font_h5 | font_face: font_display: 'swap' }}
+  {{ settings.font_h6 | font_face: font_display: 'swap' }}
+{%- endstyle -%}
+
+{%- if settings.font_body_custom_family and settings.font_body_custom_family != '' -%}
+  {%- assign font_body = settings.font_body_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_body_style = settings.font_body_custom_style -%}
+  {%- assign font_body_weight = settings.font_body_custom_weight | default: 400 -%}
+  {%- assign font_body_weight_bold = settings.font_body_custom_weight | plus: 200 | at_most: 1000 -%}
+{%- else -%}
+  {%- capture font_body -%}{{ settings.font_body.family }}, {{ settings.font_body.fallback_families }}{%- endcapture -%}
+  {%- assign font_body_style = settings.font_body.style -%}
+  {%- assign font_body_weight = settings.font_body.weight -%}
+  {%- assign font_body_weight_bold = settings.font_body.weight | plus: 200 | at_most: 1000 -%}
+{%- endif -%}
+
+{%- if settings.font_caption_custom_family and settings.font_caption_custom_family != '' -%}
+  {%- assign font_caption = settings.font_caption_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_caption_style = settings.font_caption_custom_style -%}
+  {%- assign font_caption_weight = settings.font_caption_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_caption -%}
+    {{ settings.font_caption.family }}, {{ settings.font_caption.fallback_families }}
+  {%- endcapture -%}
+  {%- assign font_caption_style = settings.font_caption.style -%}
+  {%- assign font_caption_weight = settings.font_caption.weight -%}
+{%- endif -%}
+
+{%- if settings.font_button_custom_family and settings.font_button_custom_family != '' -%}
+  {%- assign font_button = settings.font_button_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_button_style = settings.font_button_custom_style -%}
+  {%- assign font_button_weight = settings.font_button_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_button -%}
+    {{ settings.font_button.family }}, {{ settings.font_button.fallback_families }}
+  {%- endcapture -%}
+  {%- assign font_button_style = settings.font_button.style -%}
+  {%- assign font_button_weight = settings.font_button.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h1_custom_family and settings.font_h1_custom_family != '' -%}
+  {%- assign font_h1 = settings.font_h1_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h1_style = settings.font_h1_custom_style -%}
+  {%- assign font_h1_weight = settings.font_h1_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h1 -%}{{ settings.font_h1.family }}, {{ settings.font_h1.fallback_families }}{%- endcapture -%}
+  {%- assign font_h1_style = settings.font_h1.style -%}
+  {%- assign font_h1_weight = settings.font_h1.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h2_custom_family and settings.font_h2_custom_family != '' -%}
+  {%- assign font_h2 = settings.font_h2_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h2_style = settings.font_h2_custom_style -%}
+  {%- assign font_h2_weight = settings.font_h2_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h2 -%}{{ settings.font_h2.family }}, {{ settings.font_h2.fallback_families }}{%- endcapture -%}
+  {%- assign font_h2_style = settings.font_h2.style -%}
+  {%- assign font_h2_weight = settings.font_h2.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h3_custom_family and settings.font_h3_custom_family != '' -%}
+  {%- assign font_h3 = settings.font_h3_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h3_style = settings.font_h3_custom_style -%}
+  {%- assign font_h3_weight = settings.font_h3_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h3 -%}{{ settings.font_h3.family }}, {{ settings.font_h3.fallback_families }}{%- endcapture -%}
+  {%- assign font_h3_style = settings.font_h3.style -%}
+  {%- assign font_h3_weight = settings.font_h3.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h4_custom_family and settings.font_h4_custom_family != '' -%}
+  {%- assign font_h4 = settings.font_h4_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h4_style = settings.font_h4_custom_style -%}
+  {%- assign font_h4_weight = settings.font_h4_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h4 -%}{{ settings.font_h4.family }}, {{ settings.font_h4.fallback_families }}{%- endcapture -%}
+  {%- assign font_h4_style = settings.font_h4.style -%}
+  {%- assign font_h4_weight = settings.font_h4.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h5_custom_family and settings.font_h5_custom_family != '' -%}
+  {%- assign font_h5 = settings.font_h5_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h5_style = settings.font_h5_custom_style -%}
+  {%- assign font_h5_weight = settings.font_h5_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h5 -%}{{ settings.font_h5.family }}, {{ settings.font_h5.fallback_families }}{%- endcapture -%}
+  {%- assign font_h5_style = settings.font_h5.style -%}
+  {%- assign font_h5_weight = settings.font_h5.weight -%}
+{%- endif -%}
+
+{%- if settings.font_h6_custom_family and settings.font_h6_custom_family != '' -%}
+  {%- assign font_h6 = settings.font_h6_custom_family | replace: 'font-family:', ''  | replace: ';', '' -%}
+  {%- assign font_h6_style = settings.font_h6_custom_style -%}
+  {%- assign font_h6_weight = settings.font_h6_custom_weight | default: 400 -%}
+{%- else -%}
+  {%- capture font_h6 -%}{{ settings.font_h6.family }}, {{ settings.font_h6.fallback_families }}{%- endcapture -%}
+  {%- assign font_h6_style = settings.font_h6.style -%}
+  {%- assign font_h6_weight = settings.font_h6.weight -%}
+{%- endif -%}
+
+{%- style -%}
+  :root {
+    --font-body-family: {{ font_body }};
+    --font-body-style: {{ font_body_style }};
+    --font-body-weight: {{ font_body_weight }};
+    --font-body-weight-bold: {{ font_body_weight_bold }};
+
+    --font-caption-family: {{ font_caption }};
+    --font-caption-style: {{ font_caption_style }};
+    --font-caption-weight: {{ font_caption_weight }};
+
+    --font-button-family: {{ font_button }} ;
+    --font-button-style: {{ font_button_style }};
+    --font-button-weight: {{ font_button_weight }};
+
+    --font-h1-family: {{ font_h1 }};
+    --font-h1-style: {{ font_h1_style }};
+    --font-h1-weight: {{ font_h1_weight }};
+
+    --font-h2-family: {{ font_h2 }};
+    --font-h2-style: {{ font_h2_style }};
+    --font-h2-weight: {{ font_h2_weight }};
+
+    --font-h3-family: {{ font_h3 }};
+    --font-h3-style: {{ font_h3_style }};
+    --font-h3-weight: {{ font_h3_weight }};
+
+    --font-h4-family: {{ font_h4 }};
+    --font-h4-style: {{ font_h4_style }};
+    --font-h4-weight: {{ font_h4_weight }};
+
+    --font-h5-family: {{ font_h5 }};
+    --font-h5-style: {{ font_h5_style }};
+    --font-h5-weight: {{ font_h5_weight }};
+
+    --font-h6-family: {{ font_h6 }};
+    --font-h6-style: {{ font_h6_style }};
+    --font-h6-weight: {{ font_h6_weight }};
+  }
+
+  :root {
+    /*text colors*/
+    --color-heading: {{ settings.color_heading | color_extract: 'red' }}, {{ settings.color_heading | color_extract: 'green' }}, {{ settings.color_heading | color_extract: 'blue' }};
+    --color-text: {{ settings.color_text | color_extract: 'red' }}, {{ settings.color_text | color_extract: 'green' }}, {{ settings.color_text | color_extract: 'blue' }};
+    --color-text-links: {{ settings.color_text_links | color_extract: 'red' }}, {{ settings.color_text_links | color_extract: 'green' }}, {{ settings.color_text_links | color_extract: 'blue' }};
+    --color-text-links-hover: {{ settings.color_text_links_hover | color_extract: 'red' }}, {{ settings.color_text_links_hover | color_extract: 'green' }}, {{ settings.color_text_links_hover | color_extract: 'blue' }};
+
+    /*background colors*/
+    --color-background-body: {{ settings.color_background_body | color_extract: 'red' }}, {{ settings.color_background_body | color_extract: 'green' }}, {{ settings.color_background_body | color_extract: 'blue' }};
+    --color-background-alt: {{ settings.color_background_alt | color_extract: 'red' }}, {{ settings.color_background_alt | color_extract: 'green' }}, {{ settings.color_background_alt | color_extract: 'blue' }};
+
+    /*primary button colors*/
+    --color-background-button-primary: {{ settings.color_background_button_primary | color_extract: 'red' }}, {{ settings.color_background_button_primary | color_extract: 'green' }}, {{ settings.color_background_button_primary | color_extract: 'blue' }};
+    --color-text-button-primary: {{ settings.color_text_button_primary | color_extract: 'red' }}, {{ settings.color_text_button_primary | color_extract: 'green' }}, {{ settings.color_text_button_primary | color_extract: 'blue' }};
+    --color-border-button-primary: {{ settings.color_border_button_primary | color_extract: 'red' }}, {{ settings.color_border_button_primary | color_extract: 'green' }}, {{ settings.color_border_button_primary | color_extract: 'blue' }};
+    --color-background-button-primary-hover: {{ settings.color_background_button_primary_hover | color_extract: 'red' }}, {{ settings.color_background_button_primary_hover | color_extract: 'green' }}, {{ settings.color_background_button_primary_hover | color_extract: 'blue' }};
+    --color-text-button-primary-hover: {{ settings.color_text_button_primary_hover | color_extract: 'red' }}, {{ settings.color_text_button_primary_hover | color_extract: 'green' }}, {{ settings.color_text_button_primary_hover | color_extract: 'blue' }};
+    --color-border-button-primary-hover: {{ settings.color_border_button_primary_hover | color_extract: 'red' }}, {{ settings.color_border_button_primary_hover | color_extract: 'green' }}, {{ settings.color_border_button_primary_hover | color_extract: 'blue' }};
+
+    /*secondary button colors*/
+    --color-background-button-secondary: {{ settings.color_background_button_secondary | color_extract: 'red' }}, {{ settings.color_background_button_secondary | color_extract: 'green' }}, {{ settings.color_background_button_secondary | color_extract: 'blue' }};
+    --color-text-button-secondary: {{ settings.color_text_button_secondary | color_extract: 'red' }}, {{ settings.color_text_button_secondary | color_extract: 'green' }}, {{ settings.color_text_button_secondary | color_extract: 'blue' }};
+    --color-border-button-secondary: {{ settings.color_border_button_secondary | color_extract: 'red' }}, {{ settings.color_border_button_secondary | color_extract: 'green' }}, {{ settings.color_border_button_secondary | color_extract: 'blue' }};
+    --color-background-button-secondary-hover: {{ settings.color_background_button_secondary_hover | color_extract: 'red' }}, {{ settings.color_background_button_secondary_hover | color_extract: 'green' }}, {{ settings.color_background_button_secondary_hover | color_extract: 'blue' }};
+    --color-text-button-secondary-hover: {{ settings.color_text_button_secondary_hover | color_extract: 'red' }}, {{ settings.color_text_button_secondary_hover | color_extract: 'green' }}, {{ settings.color_text_button_secondary_hover | color_extract: 'blue' }};
+    --color-border-button-secondary-hover: {{ settings.color_border_button_secondary_hover | color_extract: 'red' }}, {{ settings.color_border_button_secondary_hover | color_extract: 'green' }}, {{ settings.color_border_button_secondary_hover | color_extract: 'blue' }};
+
+    /*icon colors*/
+    --color-icon: {{ settings.color_icon | color_extract: 'red' }}, {{ settings.color_icon | color_extract: 'green' }}, {{ settings.color_icon | color_extract: 'blue' }};
+    --color-icon-hover: {{ settings.color_icon_hover | color_extract: 'red' }}, {{ settings.color_icon_hover | color_extract: 'green' }}, {{ settings.color_icon_hover | color_extract: 'blue' }};
+
+    /*borders*/
+    --color-border: {{ settings.color_border | color_extract: 'red' }}, {{ settings.color_border | color_extract: 'green' }}, {{ settings.color_border | color_extract: 'blue' }};
+    --color-sale: {{ settings.color_sale | color_extract: 'red' }}, {{ settings.color_sale | color_extract: 'green' }}, {{ settings.color_sale | color_extract: 'blue' }};
+
+    /*cards*/
+    --color-background-card: {{ settings.color_background_card | color_extract: 'red' }}, {{ settings.color_background_card | color_extract: 'green' }}, {{ settings.color_background_card | color_extract: 'blue' }};
+    --color-border-card: {{ settings.color_border_card | color_extract: 'red' }}, {{ settings.color_border_card | color_extract: 'green' }}, {{ settings.color_border_card | color_extract: 'blue' }};
+    --color-heading-card: {{ settings.color_heading_card | color_extract: 'red' }}, {{ settings.color_heading_card | color_extract: 'green' }}, {{ settings.color_heading_card | color_extract: 'blue' }};
+    --color-text-card: {{ settings.color_text_card | color_extract: 'red' }}, {{ settings.color_text_card | color_extract: 'green' }}, {{ settings.color_text_card | color_extract: 'blue' }};
+
+    /*inputs*/
+    --color-input-background: {{ settings.color_input_background | color_extract: 'red' }}, {{ settings.color_input_background | color_extract: 'green' }}, {{ settings.color_input_background | color_extract: 'blue' }};
+    --color-input-border: {{ settings.color_input_border | color_extract: 'red' }}, {{ settings.color_input_border | color_extract: 'green' }}, {{ settings.color_input_border | color_extract: 'blue' }};
+    --color-input-placeholder: {{ settings.color_input_placeholder | color_extract: 'red' }}, {{ settings.color_input_placeholder | color_extract: 'green' }}, {{ settings.color_input_placeholder | color_extract: 'blue' }};
+    --color-input-text: {{ settings.color_input_text | color_extract: 'red' }}, {{ settings.color_input_text | color_extract: 'green' }}, {{ settings.color_input_text | color_extract: 'blue' }};
+
+    {%- if settings.width_container != 'none' -%}
+      --container-width: {{ settings.width_container | divided_by: 10 }}rem;
+    {%- else -%}
+      --container-width: 100vw;
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+{%- comment -%} JavaScript/Liquid Settings {%- endcomment -%}
+<script>
+  window.routes = {
+    shop_domain: '{{- shop.url -}}',
+    cart: '{{- routes.cart_url -}}',
+    cartAdd: '{{ routes.cart_add_url }}',
+    cartChange: '{{ routes.cart_change_url }}',
+    cartUpdate: '{{ routes.cart_update_url }}',
+    predictiveSearch: '{{ routes.predictive_search_url }}',
+    recommendations:  '{{ routes.product_recommendations_url }}',
+  };
+
+  window.cartStrings = {
+    error: `{{ 'cart.cart_error' | t }}`,
+    quantityError: `{{ 'cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+    addToCart: `{{ 'products.add_to_cart' | t }}`,
+    addedToCart: `{{ 'products.added_to_cart' | t }}`,
+    addingToCart: `{{ 'products.adding_to_cart' | t }}`,
+    unavailable: `{{ 'products.unavailable' | t }}`,
+    miniCart: {{ settings.display_mini_cart }}
+  };
+
+  window.searchStrings = {
+    title_results: `{{ 'search.title_results' | t }}`,
+    title_no_results: `{{ 'search.title_no_results' | t }}`,
+    title_results_collection: `{{ 'search.title_results_collection' | t }}`,
+    title_no_results_collection: `{{ 'search.title_no_results_collection' | t }}`,
+    title_results_article: `{{ 'search.title_results_article' | t }}`,
+    title_no_results_article: `{{ 'search.title_no_results_article' | t }}`
+  };
+
+  document.documentElement.className = document.documentElement.className.replace('no-js', 'has-js');
+</script>

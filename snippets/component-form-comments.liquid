@@ -1,0 +1,163 @@
+{%- if blog.comments_enabled? -%}
+  <link rel="stylesheet" href="{{ 'component-form-contact.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'component-form-contact.css' | asset_url | stylesheet_tag }}</noscript>
+  {%- if article.comments_count > 0 -%}
+    {%- assign anchorId = '#Comments-' | append: article.id -%}
+    <div class="main-article__comments">
+      <h2 class="text-display-md" id="Comments-{{ article.id }}" tabindex="-1">
+        {{ 'blogs.comments.comment_section_title' | t }}
+      </h2>
+      <p class="text-sm">{{ 'blogs.comments_count' | t: count: article.comments_count }}</p>
+      {% paginate article.comments by 5 %}
+        <div class="article-template__comments">
+          {%- for comment in article.comments -%}
+            <div class="main-article__comment">
+              {{ comment.content }}
+              <footer>
+                <strong>{{ comment.author }}</strong>
+                {{ comment.created_at | time_tag: format: 'date' }}
+              </footer>
+            </div>
+          {%- endfor -%}
+          {% render 'component-pagination', paginate: paginate, anchor: anchorId %}
+        </div>
+      {% endpaginate %}
+    </div>
+  {%- endif -%}
+
+  {% form 'new_comment', article %}
+    {%- liquid
+      assign post_message = 'blogs.comments.success'
+      if blog.moderated? and comment.status == 'unapproved'
+        assign post_message = 'blogs.comments.success_moderated'
+      endif
+    -%}
+    <h2>{{ 'blogs.comments.comment_form_title' | t }}</h2>
+    {%- if blog.moderated? -%}
+      <p class="text-sm">{{ 'blogs.comments.moderated' | t }}</p>
+    {%- endif -%}
+    <div class="form-contact__wrapper">
+      {%- if form.errors -%}
+        <div class="form-contact__alerts error">
+          <div role="alert" class="form__message">
+            <p class="text-md" tabindex="-1" autofocus>
+              {{ 'sections.contact_form.error_heading' | t }}
+            </p>
+          </div>
+          <ul role="list">
+            {%- for field in form.errors -%}
+              <li>
+                <a href="#CommentForm-{{ field }}" class="link">
+                  {%- if form.errors.translated_fields[field] contains 'author' -%}
+                    {{ 'blogs.comments.name' | t }}
+                  {%- elsif form.errors.translated_fields[field] contains 'body' -%}
+                    {{ 'blogs.comments.message' | t }}
+                  {%- else -%}
+                    {{ form.errors.translated_fields[field] }}
+                  {%- endif -%}
+                  {{ form.errors.messages[field] }}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- elsif form.posted_successfully? -%}
+        <div class="form-contact__alerts success">
+          <p class="text-md" tabindex="-1">{{ post_message | t }}</p>
+        </div>
+      {%- endif -%}
+
+      <div class="form-contact__two-col">
+        <div class="form-contact__field">
+          <label class="text-sm" for="CommentForm-author">
+            {{- 'blogs.comments.name' | t }}
+            <span aria-hidden="true">*</span></label
+          >
+          <input
+            type="text"
+            name="comment[author]"
+            id="CommentForm-author"
+            autocomplete="name"
+            value="{{ form.author }}"
+            aria-required="true"
+            required
+            {% if form.errors contains 'author' %}
+              aria-invalid="true"
+              aria-describedby="CommentForm-author-error"
+            {% endif %}
+            placeholder="{{ 'blogs.comments.name' | t }}"
+          >
+          {%- if form.errors contains 'author' -%}
+            <small class="form-contact__field-error" id="CommentForm-author-error">
+              <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+              <span class="form-contact__message">
+                {{- 'blogs.comments.name' | t }}
+                {{ form.errors.messages['author'] }}.</span
+              >
+            </small>
+          {%- endif -%}
+        </div>
+        <div class="form-contact__field">
+          <label class="text-sm" for="CommentForm-email">
+            {{- 'blogs.comments.email' | t }}
+            <span aria-hidden="true">*</span></label
+          >
+          <input
+            type="email"
+            name="comment[email]"
+            id="CommentForm-email"
+            autocomplete="email"
+            value="{{ form.email }}"
+            autocorrect="off"
+            autocapitalize="off"
+            aria-required="true"
+            required
+            {% if form.errors contains 'email' %}
+              aria-invalid="true"
+              aria-describedby="CommentForm-email-error"
+            {% endif %}
+            placeholder="{{ 'blogs.comments.email' | t }}"
+            pattern="^[\w]{1,}[\w.+-]{0,}@[\w-]{1,}([.][a-zA-Z]{2,}|[.][\w-]{2,}[.][a-zA-Z]{2,})$"
+          >
+          {%- if form.errors contains 'email' -%}
+            <small class="form-contact__field-error" id="CommentForm-email-error">
+              <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+              <span class="form-contact__message">
+                {{- 'blogs.comments.email' | t }}
+                {{ form.errors.messages['email'] }}.</span
+              >
+            </small>
+          {%- endif -%}
+        </div>
+      </div>
+      <div class="form-contact__field">
+        <label class="text-sm" for="CommentForm-body">
+          {{- 'blogs.comments.message' | t }}
+          <span aria-hidden="true">*</span></label
+        >
+        <textarea
+          rows="5"
+          name="comment[body]"
+          id="CommentForm-body"
+          aria-required="true"
+          required
+          {% if form.errors contains 'body' %}
+            aria-invalid="true"
+            aria-describedby="CommentForm-body-error"
+          {% endif %}
+          placeholder="{{ 'blogs.comments.message' | t }}"
+        >{{ form.body }}</textarea>
+      </div>
+      {%- if form.errors contains 'body' -%}
+        <small class="form-contact__field-error" id="CommentForm-body-error">
+          <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+          <span class="form-contact__message">
+            {{- 'blogs.comments.message' | t }}
+            {{ form.errors.messages['body'] }}.</span
+          >
+        </small>
+      {%- endif -%}
+      <input type="submit" class="button" value="{{ 'blogs.comments.post' | t }}">
+    </div>
+  {% endform %}
+{%- endif -%}

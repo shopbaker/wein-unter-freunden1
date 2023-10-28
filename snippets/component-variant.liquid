@@ -1,0 +1,80 @@
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    class="no-js-hidden"
+    data-section="{{ section.id }}"
+    data-url="{{ product.url }}"
+    {% if no_url_update %}
+      data-update-url="false"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      <div class="product-converter__dropdown">
+        <label class="text-sm" for="Option-{{ section.id }}-{{ forloop.index0 }}{{ id | prepend: '-' }}">
+          {{ option.name }}
+        </label>
+        <div class="select">
+          <select
+            id="Option-{{ section.id }}-{{ forloop.index0 }}{{ id | prepend: '-' }}"
+            class="select__select"
+            name="options[{{ option.name | escape }}]"
+            form="{{ product_form_id }}"
+          >
+            {%- for value in option.values -%}
+              <option
+                value="{{ value | escape }}"
+                {% if option.selected_value == value %}
+                  selected="selected"
+                {% endif %}
+              >
+                {{ value }}
+              </option>
+            {%- endfor -%}
+          </select>
+          {%- render 'component-icon' icon: 'expand_more' -%}
+        </div>
+      </div>
+    {%- endfor -%}
+
+    <script type="application/json">
+      {{ product.variants | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}
+
+<noscript class="form-product__noscript-wrapper-{{ section.id }}">
+  <div class="product-converter__dropdown{%- if product.has_only_default_variant -%} u-hide{%- endif -%}">
+    <label class="text-sm" for="Variants-{{ section.id }}">{{ 'products.product_variants' | t }}</label>
+    <div class="select">
+      <select
+        name="id"
+        id="Variants-{{ section.id }}"
+        class="select__select"
+        form="{{ product_form_id }}"
+        data-productid="{{ product.id }}"
+      >
+        {% for variant in product.variants %}
+          <option
+            {% if variant == product.selected_or_first_available_variant %}
+              selected="selected"
+            {% endif %}
+            {% if variant.available == false %}
+              disabled
+            {% endif %}
+            value="{{ variant.id }}"
+            id="{{ variant.id }}"
+          >
+            {{ variant.title }}
+            {% if variant.available == false %}
+              -
+              {{ 'products.sold_out' | t }}
+            {% endif %}
+            -
+            {{ variant.price | money | strip_html }}
+          </option>
+        {% endfor %}
+      </select>
+      {%- render 'component-icon' icon: 'expand_more' -%}
+    </div>
+  </div>
+</noscript>

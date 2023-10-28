@@ -1,0 +1,67 @@
+<div class="cart-item mobile" data-variant-id="{{ item.variant_id }}">
+  <div class="cart-item__image">
+    <figure class="figure--square" role="none">
+      <noscript class="loading-lazy">
+        <img
+          loading="lazy"
+          width="150"
+          height="150"
+          class="cart-item-image img-absolute"
+          data-src="{{ item.image | image_url: '150x150' }}"
+          alt="{% if item.title %}{{ item.title }}{% else %}{{ 'products.media.featured_image' | t }}{% endif %}"
+        >
+      </noscript>
+    </figure>
+  </div>
+
+  <div class="cart-item__meta">
+    <div class="cart-item-info">
+      <a class="cart-item__title text-lg" href="{{ item.url }}">{{ item.title | default: 'products.title' }}</a>
+      <button class="cart-item-delete">{%- render 'component-icon', icon: 'close' -%}</button>
+      <ul role="list" aria-label="{{ 'customer.order.discount' | t }}" class="text-sm cart-item__discounts">
+        {%- if item.discounts -%}
+          {%- for discount in item.discounts -%}
+            <li>
+              {{ discount.title }}
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+      {%- if item.properties.size != 0 or item == nil -%}
+        <div class="cart-item__properties u-hide">
+          {%- for property in item.properties -%}
+            <strong>{{ property.first }}: </strong>
+            <span>
+              {%- if property.last contains '/uploads/' -%}
+                <a href="{{ property.last }}" target="_blank">
+                  {{ property.last | split: '/' | last }}
+                </a>
+              {%- elsif property.last != blank -%}
+                {{ property.last }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      <p class="text-sm cart-item__selling-plan">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+    </div>
+    <div class="cart-item__footer">
+      {%- assign qty = item.quantity -%}
+      {%- render 'component-quantity', qty: qty -%}
+      <div class="cart-item__totals">
+        <p class="text-xs">{{ 'cart.subtotal' | t }}</p>
+        <p class="cart-item-subtotal text-md">{{ item.final_line_price | money }}</p>
+        <div class="text-xs">
+          <span class="visually-hidden">{{ 'products.price.unit_price' | t }}</span>
+          <span class="unit-price">{{ item.variant.unit_price | money }}</span>
+          <span class="visually-hidden">&nbsp;{{ 'accessibility.unit_price_separator' | t }}&nbsp;</span>
+          {%- if item.variant.unit_price_measurement.reference_value != 1 -%}
+            <span class="unit-price-reference-value">{{- item.variant.unit_price_measurement.reference_value -}}</span>
+          {%- endif -%}
+          <span class="unit-price-reference-unit">{{ item.variant.unit_price_measurement.reference_unit }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="cart-item__error text-xs"></div>
+  </div>
+</div>

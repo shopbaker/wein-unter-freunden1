@@ -1,0 +1,126 @@
+{%- assign t = template | split: '.' | first -%}
+{%- liquid
+  if icon_home and icon_home != ''
+    assign icon_home = icon_home | replace: ' ', '_' | downcase
+  else
+    assign icon_home = 'home'
+  endif
+
+  if icon_arrow and icon_arrow != ''
+    assign icon_arrow = icon_arrow | replace: ' ', '_' | downcase
+  else
+    assign icon_arrow = 'chevron_right'
+  endif
+-%}
+
+<nav class="{{ display_visibility }} breadcrumbs" role="navigation" aria-label="breadcrumbs">
+  <style>
+    {% if color_background_gradient and color_background_gradient != '' or color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %}
+      #shopify-section-{{ id }} .breadcrumbs .container {
+        background: {% if color_background_gradient != '' %}{{ color_background_gradient }}{% else %}{{ color_background }}{% endif %};
+      }
+    {% endif %}
+    {% if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' %}
+      #shopify-section-{{ id }} .breadcrumbs .container {
+        color: {{ color_text }};
+      }
+    {% endif %}
+    {% if color_icon and color_icon != '' and color_icon != 'rgba(0,0,0,0)' %}
+      #shopify-section-{{ id }} .breadcrumbs .container .icon {
+        color: {{ color_icon }};
+      }
+    {% endif %}
+  </style>
+  <div class="container{% if color_background_gradient and color_background_gradient != '' or color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %} section__wrapper--background{% endif %}">
+    <ol>
+      <li>
+        <a href="{{ routes.root_url }}" title="{{ 'accessibility.home' | t }}">
+          {%- render 'component-icon', icon: icon_home -%}
+        </a>
+      </li>
+      <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+
+      {%- if text and text != '' -%}
+        <li>
+          <a href="{{ link }}">{{ text }}</a>
+        </li>
+        <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+      {%- endif -%}
+
+      {%- for breadcrumb in breadcrumbs %}
+        <li>
+          {% if breadcrumb.settings.link %}
+            <a href="{{ breadcrumb.settings.link }}">{{ breadcrumb.settings.text }}</a>
+          {% else %}
+            <p>{{ breadcrumb.settings.text }}</p>
+          {% endif %}
+        </li>
+        <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+      {%- endfor -%}
+
+      {%- case t -%}
+        {%- when 'page' -%}
+          <li>
+            <a href="{{ page.url }}" aria-current="page">{{ page.title }}</a>
+          </li>
+        {%- when 'product' -%}
+          <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+          <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+
+          {%- if product.collections -%}
+            {%- for collection in product.collections -%}
+              <li>{{ collection.title | link_to: collection.url }}</li>
+              <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+              {% break %}
+            {%- endfor -%}
+          {%- endif -%}
+
+          <li>
+            <p aria-current="page">
+              {{- product.title -}}
+            </p>
+          </li>
+        {%- when 'collection' and collection.handle -%}
+          {%- if current_tags -%}
+            <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+            <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+            <li>{{ collection.title | link_to: collection.url }}</li>
+            <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+            <li>
+              {%- capture tag_url -%}{{ collection.url }}/{{ current_tags | join: "+" }}{%- endcapture -%}
+              <a href="{{ tag_url }}" aria-current="page">{{ current_tags | join: " + " }}</a>
+            </li>
+          {%- else -%}
+            <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+            <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+            <li>
+              <a href="{{ collection.url }}" aria-current="page">{{ collection.title }}</a>
+            </li>
+          {%- endif -%}
+        {%- when 'blog' -%}
+          {%- if current_tags -%}
+            <li>{{ blog.title | link_to: blog.url }}</li>
+            <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+            <li>
+              {%- capture tag_url -%}{{ blog.url }}/tagged/{{ current_tags | join: "+" }}{%- endcapture -%}
+              <a href="{{ tag_url }}" aria-current="page">{{ current_tags | join: " & " }}</a>
+            </li>
+          {%- else -%}
+            <li>
+              <p aria-current="page">{{ blog.title }}</p>
+            </li>
+          {%- endif -%}
+        {%- when 'article' -%}
+          <li>{{ blog.title | link_to: blog.url }}</li>
+          <li>{%- render 'component-icon', icon: icon_arrow, icon_class: 'chevron_right' -%}</li>
+          <li>
+            <p aria-current="page">{{ page_title }}</p>
+          </li>
+        {%- else -%}
+          <li>
+            <p aria-current="page">{{ page_title }}</p>
+          </li>
+      {%- endcase -%}
+    </ol>
+  </div>
+</nav>

@@ -1,0 +1,113 @@
+{%- comment -%}
+    Renders the banners with given settings.
+
+    Accepts:
+    - heading
+    - button_url
+    - image
+
+    Usage:
+    {%- render 'component-banner'
+      id: block.id,
+      icon: icon,
+      caption: caption,
+      heading: heading,
+      subheading: subheading,
+      color_subheading: color_subheading,
+      button_url: button_url,
+      button_text: button_text,
+      style_link: style_link,
+      image: image,
+      image_background: image_background,
+      video_background: video_background,
+      color_background: color_background,
+      color_background_gradient: color_background_gradient,
+      color_text: color_text,
+      alignment_vertical: alignment_vertical,
+      alignment_horizontal: alignment_horizontal,
+      color_overlay: color_overlay,
+      opacity_overlay: opacity_overlay,
+      ratio_block: ratio_block,
+      fit_object: fit_object
+    -%}
+{%- endcomment -%}
+{%- if ratio_block == 'default' -%}
+  <div class="banner__content-based">
+    {%- if video_background -%}
+      {{ video_background | video_tag: image_size: '2000x', autoplay: true, loop: true, muted: true, controls: false }}
+    {%- elsif image_background -%}
+      <noscript class="loading-lazy">
+        {{ image_background | image_url: width: 1200 | image_tag: class: '', loading: 'lazy', srcset: nil }}
+      </noscript>
+    {%- else -%}
+      {%- if color_background == '' or color_background == 'rgba(0,0,0,0)' and color_background_gradient == null or color_background_gradient == '' -%}
+        {{ 'image' | placeholder_svg_tag: 'img-placeholder' }}
+      {%- endif -%}
+    {%- endif -%}
+{%- endif -%}
+<{% if style_link == 'link-block' or style_link == 'link-full-button' and button_url and button_url != null %}a href="{{ button_url }}"{% else %}div{% endif %} class="banner__wrapper banner__wrapper--{{ style_banner }} banner__wrapper--{{ id }} {% if alignment_horizontal == 'center' %} banner__wrapper--centered{% endif %}" style="{% if color_background_gradient != '' %}background: {{ color_background_gradient }};{% elsif color_background != '' and color_background != 'rgba(0,0,0,0)' -%}background: {{ color_background }};{%- endif -%}{%- if color_text != '' and color_text != 'rgba(0,0,0,0)' -%}color: {{ color_text }};{%- endif -%}{%- if alignment_horizontal == 'right' -%}justify-content: flex-end;{%- elsif alignment_horizontal == 'center' -%}justify-content: center;{%- else -%}justify-content: flex-start;{%- endif -%}">
+  {%- if color_overlay and color_overlay != '' and color_overlay != 'rgba(0,0,0,0)' -%}
+    <style>
+      .banner__wrapper--{{ id }}::before {
+        background: rgba({{ color_overlay.red }}, {{ color_overlay.green }}, {{ color_overlay.blue }}, {{ opacity_overlay | divided_by: 100.0 }});
+      }
+    </style>
+  {%- endif -%}
+  {%- if ratio_block != 'default' -%}
+    {%- if video_background -%}
+      {{ video_background | video_tag: image_size: '2000x', autoplay: true, loop: true, muted: true, controls: false, class: "banner__background" }}
+    {%- elsif image_background -%}
+      {%- assign image_class = 'banner__background object-fit--' | append: fit_object -%}
+      <noscript class="loading-lazy">
+        {{ image_background | image_url: width: 1000, height: 1000 | image_tag: class: image_class, loading: 'lazy' }}
+      </noscript>
+    {%- else -%}
+    {%- if color_background == '' or color_background == 'rgba(0,0,0,0)' and color_background_gradient == null or color_background_gradient == '' -%}
+        {%- assign image_class = 'banner__background object-fit--' | append: fit_object | append: ' img-placeholder' -%}
+        {{ 'image' | placeholder_svg_tag: image_class }}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+  <div style="{%- if alignment_vertical == 'center' -%}align-self: center;{%- elsif alignment_vertical == 'bottom' -%}align-self: flex-end;{%- else -%}align-self: flex-start;{%- endif -%}{%- if alignment_horizontal == 'right' -%} order: 2;text-align: right;{%- elsif alignment_horizontal == 'center' -%}text-align: center;{%- endif -%}">
+    {%- unless icon == 'none' -%}
+      {% if icon and icon != '' %}
+        {%- render 'component-icon', icon: icon, color_icon: color_icon -%}
+      {% endif %}
+    {%- endunless -%}
+    {%- if caption and caption != '' -%}
+      <p class="banner__caption text-sm text--caption" style="justify-content: {%- if alignment_horizontal == 'left' -%}flex-start{%- elsif alignment_horizontal == 'right' -%}flex-end{%- else -%}center{%- endif -%}">{{ caption }}</p>
+    {%- endif -%}
+    {%- if heading and heading != '' -%}
+      {%- if heading_type and heading_type != '' -%}
+        {% assign heading_level = heading_type %}
+      {%- else -%}
+        {% assign heading_level = 'p class="text-display-md"' %}
+      {%- endif -%}
+      <{{ heading_level }}>{{ heading }}</{{ heading_level }}>
+    {%- endif -%}
+    {%- if subheading and subheading != '' -%}
+      <div class="banner__subheading wysiwyg"{%- if color_subheading and color_subheading != '' and color_subheading != 'rgba(0,0,0,0)' -%} style="color: {{ color_subheading }};"{%- endif -%}>
+        {% if style_link == 'link-block' or style_link == 'link-full-button' %}
+          <p>
+            {{ subheading | strip_html }}
+          </p>
+        {% else %}
+          {{ subheading }}
+        {% endif %}
+      </div>
+    {%- endif -%}
+    {%- if style_link == 'link-full-button' and button_text != '' -%}
+      <p class="button{{ style_button | prepend: '--' }}">{{ button_text }}</p>
+    {%- elsif style_link == 'link-button' and button_text != '' %}
+      <a class="button{{ style_button | prepend: '--' }}" href="{{ button_url }}">{{ button_text }}</a>
+    {%- endif -%}
+    {%- if image -%}
+      <noscript class="loading-lazy">
+        {{ image | image_url: width: 500 | image_tag: class: 'banner__image--simple', loading: 'lazy' }}
+      </noscript>
+    {%- endif -%}
+  </div>
+</{% if style_link == 'link-block' or style_link == 'link-full-button' and button_url and button_url != '' %}a{% else %}div{% endif %}>
+{%- if ratio_block == 'default' -%}
+  </div>
+{%- endif -%}

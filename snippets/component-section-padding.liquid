@@ -1,0 +1,48 @@
+{%- comment -%}
+  Renders the style snippet for section padding control.
+
+  Usage:
+  {%- render 'component-section-padding'
+    id: section.id,
+    color_background_gradient: section.settings.color_background_gradient,
+    color_background: section.settings.color_background,
+    padding_top_mobile: section.settings.padding_top_mobile,
+    padding_bottom_mobile: section.settings.padding_bottom_mobile,
+    padding_top_desktop: section.settings.padding_top_desktop,
+    padding_bottom_desktop: section.settings.padding_bottom_desktop
+  -%}
+{%- endcomment -%}
+
+{% if color_background_gradient and color_background_gradient != '' or color_background and color_background != '' and color_background != 'rgba(0,0,0,0)' %}
+  {%- assign wrapper = 'section__wrapper--background' -%}
+{% else %}
+  {%- assign wrapper = 'section__wrapper' -%}
+{% endif %}
+<style>
+  #shopify-section-{{ id }} .section__wrapper:before {
+    border-top: 1px {{ style_line_top | replace: 'line', 'solid' }} {{ color_line | default: settings.color_border }};
+  }
+  #shopify-section-{{ id }} .section__wrapper:after {
+    border-bottom: 1px {{ style_line_bottom | replace: 'line', 'solid' }} {{ color_line | default: settings.color_border }};
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ id }} .{{ wrapper }} {
+      {%- if padding_top_mobile -%}
+        padding-top: {{ padding_top_mobile }}px;
+      {%- endif -%}
+      {%- if padding_bottom_mobile -%}
+        padding-bottom: {{ padding_bottom_mobile }}px;
+      {%- endif -%}
+    }
+  }
+  @media (min-width: 768px) {
+    #shopify-section-{{ id }} .{{ wrapper }} {
+      {%- if padding_top_desktop -%}
+        padding-top: {{ padding_top_desktop }}px;
+      {%- endif -%}
+      {%- if padding_bottom_desktop -%}
+        padding-bottom: {{ padding_bottom_desktop }}px;
+      {%- endif -%}
+    }
+  }
+</style>

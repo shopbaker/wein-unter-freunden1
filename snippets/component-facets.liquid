@@ -1,0 +1,150 @@
+{% if page.filters.size > 0 %}
+  <div class="facets" id="FacetsWrapper">
+    <div class="facets__header">
+      <p class="text-xl">{{ 'general.filters.filters' | t }}</p>
+      <facet-remove>
+        <a href="{{ page.url }}?sort_by={{ page.sort_by }}{% if page == search %}&q={{ page.terms }}{% endif %}"
+          ><span class="text-xs">{{ 'general.filters.clear_all' | t }}</span></a
+        >
+      </facet-remove>
+
+      <button class="facets__mobile-close" aria-label="Close">{%- render 'component-icon', icon: 'close' -%}</button>
+    </div>
+    <facet-filters-form id="facets">
+      <form id="FacetFiltersForm" class="facets__form facet-form">
+        <div class="facets__active">
+          {%- for filter in page.filters -%}
+            {%- for filter_value in filter.active_values -%}
+              {%- assign filter_active = true -%}
+              {%- break -%}
+            {%- endfor -%}
+          {%- endfor -%}
+          {%- if filter_active -%}
+            <p class="text-xs facets__active-header">{{ 'general.filters.showing' | t }}</p>
+          {%- endif -%}
+          {%- for filter in page.filters -%}
+            {%- for filter_value in filter.active_values -%}
+              <div class="facets__active-facet">
+                <facet-remove>
+                  <a class="facets__remove-filter" href="{{ filter_value.url_to_remove }}">
+                    {%- render 'component-icon', icon: 'close' -%}
+                    <span class="text-xs">{{ filter_value.label }}</span>
+                  </a>
+                </facet-remove>
+              </div>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
+
+        {%- for filter in page.filters -%}
+          {%- unless filter.label == 'Availability' -%}
+            <div class="facets__facet {{ filter.label | handleize }}">
+              <details open>
+                <summary tabindex="0">
+                  <p class="text-md">{{ filter.label }}</p>
+                  {% render 'component-icon', icon: 'expand_more' %}
+                </summary>
+
+                <div class="content">
+                  {%- if filter.type == 'price_range' -%}
+                    <div class="facet__price-range">
+                      <div class="range-item">
+                        <label for="Filter-{{ filter.min_value.param_name }}" class="text-sm">
+                          {{- 'general.filters.from' | t -}}
+                        </label>
+                        <div>
+                          <span>{{ cart.currency.symbol }}</span>
+                          <input
+                            name="{{ filter.min_value.param_name }}"
+                            id="Filter-{{ filter.min_value.param_name }}"
+                            {%- if filter.min_value.value -%}
+                              value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                            {%- endif -%}
+                            type="number"
+                            placeholder="0"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <label for="Filter-{{ filter.max_value.param_name }}" class="text-sm">
+                          {{- 'general.filters.to' | t -}}
+                        </label>
+                        <div>
+                          <span>{{ cart.currency.symbol }}</span>
+                          <input
+                            name="{{ filter.max_value.param_name }}"
+                            id="Filter-{{ filter.max_value.param_name }}"
+                            {%- if filter.max_value.value -%}
+                              value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                            {%- endif -%}
+                            type="number"
+                            placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  {%- else -%}
+                    <div class="truncatable">
+                      <ul>
+                        {%- for filter_value in filter.values -%}
+                          <li class="{{ filter_value.value | handleize }}">
+                            <label class="form-control" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                              <input
+                                type="checkbox"
+                                name="{{ filter_value.param_name }}"
+                                value="{{ filter_value.value }}"
+                                id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                                {%- if filter_value.active -%}
+                                  checked
+                                {%- endif -%}
+                                {%- if filter_value.count == 0 and filter_value.active == false -%}
+                                  disabled
+                                {%- endif -%}
+
+                              ><span>{{ filter_value.label }}</span></label
+                            >
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                      <p class="expand">{{ 'general.pagination.more' | t }}</p>
+                      <p class="shrink">{{ 'general.pagination.less' | t }}</p>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </details>
+            </div>
+          {%- endunless -%}
+
+          {%- if filter.label == 'Availability' -%}
+            <div class="facets__facet facets__facet--availability" style="display: none">
+              {%- for filter_value in filter.values -%}
+                <div class="facets__facet--availability-{{ filter_value.value }}">
+                  <label class="form-control" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                    <input
+                      type="checkbox"
+                      name="{{ filter_value.param_name }}"
+                      value="{{ filter_value.value }}"
+                      id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                      class="available-online"
+                      {%- if filter_value.active -%}
+                        checked
+                      {%- endif -%}
+                      {%- if filter_value.count == 0 and filter_value.active == false -%}
+                        disabled
+                      {%- endif -%}
+
+                    ><span>{{ filter_value.label }}</span></label
+                  >
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </form>
+    </facet-filters-form>
+  </div>
+{% endif %}

@@ -1,0 +1,166 @@
+{%- comment -%}
+  Renders mobile navigation second-level columns.
+
+  Accepts:
+  - link: {Object} Link object
+  - menu: {Object} Menu object
+  - title: {String} Menu with a dropdown menu item title
+  - menu_type: {String} Menu type
+
+  Usage:
+  {%- render 'component-navigation-item-primary'
+    link: block.settings.link,
+    menu: block.settings.menu,
+    title: block.settings.title,
+    menu_type: block.settings.menu_type,
+    display_banner: block.settings.display_banner,
+    heading: block.settings.heading_banner,
+    subheading: block.settings.subheading_banner,
+    button_url: block.settings.button_url_banner,
+    button_text: block.settings.button_text_banner,
+    image_background: block.settings.image_banner
+    id: block.id
+  -%}
+{%- endcomment -%}
+{%- if menu_type == 'multi_level_megamenu' -%}
+  {%- assign link = menu -%}
+{%- endif -%}
+
+{%- if link.links -%}
+  <div class="nav__secondary-menu">
+    {%- for link in link.links -%}
+      <div
+        class="nav__secondary-menu__item"
+        aria-hidden="true"
+        id="navigation-item-{{ link.title | handleize }}-{{ id }}"
+      >
+        <button class="nav__secondary-menu__close" tabindex="-1">
+          {%- render 'component-icon', icon: 'chevron_left' -%}
+          {{ link.title }}
+        </button>
+        {%- if link.links != blank and menu_type == 'multi_level_megamenu' -%}
+          <div class="nav__secondary-navigation-item-content">
+            {%- for child_link in link.links -%}
+              <div class="nav__mobile-dropdown-wrapper">
+                {%- if child_link.links != blank -%}
+                  <button class="nav__mobile-accordion-opener">
+                    {{ child_link.title }}
+                    {% render 'component-icon', icon: 'expand_more' %}
+                  </button>
+                  <div class="nav__mobile-dropdown__content-wrapper">
+                    <div class="nav__content__outer">
+                      <div class="nav__content">
+                        <div class="nav__main-menu">
+                          {%- if child_link.links -%}
+                            <ul role="navigation">
+                              {%- for link in child_link.links -%}
+                                <li>
+                                  <a href="{{ link.url }}" class="nav__main-menu-link--basic">
+                                    {{ link.title }}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {%- else -%}
+                  <a href="{{ child_link.url }}" class="nav__main-menu-link--basic">
+                    {{ child_link.title }}
+                  </a>
+                {%- endif %}
+              </div>
+            {%- endfor -%}
+            {%- if display_view_all -%}
+              <a
+                href="{{ link.url }}"
+                class="button button--fullwidth button--default"
+              >
+                {{ 'products.view' | t }}
+                {{ link.title }}
+              </a>
+            {%- endif -%}
+            {%- if display_banner -%}
+              <div class="nav__secondary-navigation-item-content__featured-column">
+                {%-
+                  render 'component-banner'
+                  id: id,
+                  style_banner: 'basic',
+                  icon: icon,
+                  caption: caption,
+                  heading: heading,
+                  subheading: subheading,
+                  color_subheading: color_subheading,
+                  button_url: button_url,
+                  button_text: button_text,
+                  style_button: style_button,
+                  style_link: style_link,
+                  image: image,
+                  image_secondary: image_secondary,
+                  image_background: image_background,
+                  video_background: video_background,
+                  color_background: color_background,
+                  color_text: color_text,
+                  alignment_vertical: alignment_vertical,
+                  alignment_horizontal: alignment_horizontal,
+                  color_overlay: color_overlay,
+                  opacity_overlay: opacity_overlay,
+                  ratio_block: 'square',
+                  fit_object: 'cover'
+                -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {% elsif link.links != blank and menu_type == 'one_level_megamenu' %}
+          <div class="nav__secondary-navigation-item-content">
+            <div class="nav__secondary-navigation-item-content__main-columm">
+              {%- if link.links -%}
+                <ul role="navigation">
+                  {%- for link in link.links -%}
+                    <li>
+                      <a href="{{ link.url }}" class="nav__main-menu-link--basic">
+                        {{ link.title }}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </div>
+          {%- if display_banner -%}
+            <div class="nav__secondary-navigation-item-content__featured-column">
+              {%-
+                render 'component-banner'
+                id: id,
+                style_banner: 'basic',
+                icon: icon,
+                caption: caption,
+                heading: heading,
+                subheading: subheading,
+                color_subheading: color_subheading,
+                button_url: button_url,
+                button_text: button_text,
+                style_button: style_button,
+                style_link: style_link,
+                image: image,
+                image_secondary: image_secondary,
+                image_background: image_background,
+                video_background: video_background,
+                color_background: color_background,
+                color_text: color_text,
+                alignment_vertical: alignment_vertical,
+                alignment_horizontal: alignment_horizontal,
+                color_overlay: color_overlay,
+                opacity_overlay: opacity_overlay,
+                ratio_block: 'square',
+                fit_object: 'cover'
+              -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}

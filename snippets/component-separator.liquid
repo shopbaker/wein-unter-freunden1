@@ -1,0 +1,36 @@
+{%- comment -%}
+  Renders a separator item.
+
+  Usage:
+  {%- render 'component-separator'
+    height_desktop: section.settings.height_desktop,
+    height_mobile: section.settings.height_mobile,
+    style_line: section.settings.style_line,
+    color_line: section.settings.color_line,
+    id: block.id
+  -%}
+{%- endcomment -%}
+
+<div id="block-{{ id }}" class="separator">
+  <hr
+    aria-hidden="true"
+    focusable="false"
+    role="presentation"
+    class="{{ style_line }}"
+    {% if color_line and color_line != '' and color_line != 'rgba(0,0,0,0)' %}
+      style="color: {{ color_line }};"
+    {%- endif -%}
+  >
+  <style>
+    #block-{{ id }} {
+      height: {{ height_mobile | append: "px" }};
+      margin: 0 !important;
+    }
+
+    @media (min-width: 1024px) {
+      #block-{{ id }} {
+        height: {{ height_desktop | append: "px" }};
+      }
+    }
+  </style>
+</div>

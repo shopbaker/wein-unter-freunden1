@@ -1,0 +1,83 @@
+{%- comment -%}
+  Renders a list of social media accounts from theme settings.
+
+  Usage:
+  {%- render 'component-icons-social' -%}
+{%- endcomment -%}
+
+<section class="c-social-accounts">
+  <ul role="list">
+    {%- if settings.social_twitter_link != blank -%}
+      <li>
+        <a href="{{ settings.social_twitter_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'twitter' -%}
+          <span class="visually-hidden">{{ 'general.social.links.twitter' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_facebook_link != blank -%}
+      <li>
+        <a href="{{ settings.social_facebook_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'facebook' -%}
+          <span class="visually-hidden">{{ 'general.social.links.facebook' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_pinterest_link != blank -%}
+      <li>
+        <a href="{{ settings.social_pinterest_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'pinterest' -%}
+          <span class="visually-hidden">{{ 'general.social.links.pinterest' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_instagram_link != blank -%}
+      <li>
+        <a href="{{ settings.social_instagram_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'instagram' -%}
+          <span class="visually-hidden">{{ 'general.social.links.instagram' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_tiktok_link != blank -%}
+      <li>
+        <a href="{{ settings.social_tiktok_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'tiktok' -%}
+          <span class="visually-hidden">{{ 'general.social.links.tiktok' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_tumblr_link != blank -%}
+      <li>
+        <a href="{{ settings.social_tumblr_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'tumblr' -%}
+          <span class="visually-hidden">{{ 'general.social.links.tumblr' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_snapchat_link != blank -%}
+      <li>
+        <a href="{{ settings.social_snapchat_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'snapchat' -%}
+          <span class="visually-hidden">{{ 'general.social.links.snapchat' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_youtube_link != blank -%}
+      <li>
+        <a href="{{ settings.social_youtube_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'youtube' -%}
+          <span class="visually-hidden">{{ 'general.social.links.youtube' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+    {%- if settings.social_vimeo_link != blank -%}
+      <li>
+        <a href="{{ settings.social_vimeo_link }}" target="_blank" rel="nofollow">
+          {%- render 'component-icon-custom' icon: 'vimeo' -%}
+          <span class="visually-hidden">{{ 'general.social.links.vimeo' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+</section>

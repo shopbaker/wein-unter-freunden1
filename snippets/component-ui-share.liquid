@@ -1,0 +1,78 @@
+{%- liquid
+  if template contains 'product'
+    assign share_text = 'Check out '
+    assign share_text = share_text | append: product.title | append: ' at ' | append: shop.name
+    assign share_text_with_url = share_text | append: ' ' | append: shop.url | append: product.url
+    assign page = product
+    assign featured_image = product.featured_image | image_url
+  elsif template contains 'page'
+    assign share_text = 'Check out '
+    assign share_text = share_text | append: page.title | append: ' at ' | append: shop.name
+    assign share_text_with_url = share_text | append: ' ' | append: shop.url | append: page.url
+    assign featured_image = page.metafields.global.featured_image.value | image_url
+  elsif template contains 'article'
+    assign share_text = 'Check out '
+    assign share_text = share_text | append: article.title | append: ' at ' | append: shop.name
+    assign share_text_with_url = share_text | append: ' ' | append: shop.url | append: article.url
+    assign featured_image = article.image | image_url
+    assign page = article
+  elsif template contains 'collection'
+    assign share_text = 'Check out '
+    assign share_text = share_text | append: collection.title | append: ' at ' | append: shop.name
+    assign share_text_with_url = share_text | append: ' ' | append: shop.url | append: collection.url
+    assign featured_image = collection.featured_image | image_url
+    assign page = collection
+  elsif template contains 'blog'
+    assign share_text = 'Check out '
+    assign share_text = share_text | append: blog.title | append: ' at ' | append: shop.name
+    assign share_text_with_url = share_text | append: ' ' | append: shop.url | append: blog.url
+    assign page = blog
+  endif
+-%}
+
+<div class="c-ui-share-print">
+  {%- render 'component-icon', icon: 'share', icon_class: 'c-ui-share-print__trigger' -%}
+  <ul role="list">
+    <li>
+      <a href="https://twitter.com/intent/tweet?text={{ share_text_with_url }}" target="_blank">
+        {%- render 'component-icon-custom' icon: 'twitter' -%}
+        <span class="visually-hidden">{{ 'accessibility.social_alt_text.share_on_twitter' | t }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ page.url }}" target="_blank">
+        {%- render 'component-icon-custom' icon: 'facebook' -%}
+        <span class="visually-hidden">{{ 'accessibility.social_alt_text.share_on_facebook' | t }}</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://www.pinterest.com/pin/create/button/?url={{ shop.url }}{{ page.url }}&media={{ featured_image }}&description={{ share_text }}"
+        target="_blank"
+      >
+        {%- render 'component-icon-custom' icon: 'pinterest' -%}
+        <span class="visually-hidden">{{ 'accessibility.social_alt_text.share_on_pinterest' | t }}</span>
+      </a>
+    </li>
+    <li>
+      <a href="mailto:?subject={{ page.title }}>&body={{ share_text_with_url }}" target="_blank">
+        {%- render 'component-icon-custom' icon: 'email' -%}
+        <span class="visually-hidden">{{ 'accessibility.social_alt_text.share_via_email' | t }}</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<script>
+  document.querySelector('.c-ui-share-print__trigger').addEventListener('click', function () {
+    if (navigator.share) {
+      navigator.share({
+        title: '{{ page.title }}',
+        text: '{{ share_text }}',
+        url: '{{ shop.url }}{{ page.url }}',
+      })
+        .then()
+        .catch((error) => console.log('Error sharing', error));
+    }
+  });
+</script>

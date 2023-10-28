@@ -1,0 +1,35 @@
+{%- comment -%}
+  Renders the product rating stars.
+
+  Usage:
+  {%- render 'component-rating-product'
+    rating: product.metafields.featured_review.rating
+    show_description: true -%}
+{%- endcomment -%}
+
+<div
+  aria-hidden="true"
+  role="presentation"
+  aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: rating, rating_max: 5 }}"
+>
+  <p class="c-rating-product__content">
+    <span
+      class="c-rating-product__stars"
+      style="--rating: {{ rating }};--star-color:{%- if color_rating_full and color_rating_full != '' and color_rating_full != 'rgba(0,0,0,0)' -%}{{ color_rating_full }}{%- else %}{{ settings.color_icon }}{%- endif -%};--empty-color:{%- if color_rating_empty and color_rating_empty != '' and color_rating_empty != 'rgba(0,0,0,0)' -%}{{ color_rating_empty }}{%- else %}{{ settings.color_icon_hover }}{%- endif -%}"
+    ></span>
+    {%- if show_review_count -%}
+      <span>
+        {{- 'products.rated_by' | t }}
+        {{ review_count }}
+        {% if review_count > 1 -%}
+          {{- 'products.verified_reviews' | t -}}
+        {%- else -%}
+          {{- 'products.verified_review' | t -}}
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+    {%- if custom_description -%}
+      <span>{{ custom_description }}</span>
+    {%- endif -%}
+  </p>
+</div>

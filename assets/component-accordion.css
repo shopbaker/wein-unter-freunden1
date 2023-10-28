@@ -1,0 +1,93 @@
+.accordion details {
+  box-shadow: 0 2rem 6rem rgba(52, 64, 84, 0.04);
+  border-radius: 0.8rem;
+  border: 1px solid rgba(var(--color-border), 1);
+  margin: 0 0 1.6rem 0;
+  background-color: rgba(var(--color-background-card), 1);
+}
+.product-converter .accordion details {
+  margin: 0;
+}
+.accordion details summary {
+  color: rgba(var(--color-text), 1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  padding: 1.6rem 2.4rem;
+  position: relative;
+  outline-style: none;
+}
+.accordion details summary:hover, .accordion details summary:active, .accordion details summary:focus {
+  outline-style: none;
+}
+.accordion details summary span {
+  transition: all 0.2s ease;
+}
+.accordion details summary p {
+  flex: 1;
+  padding: 0 3.2rem 0 0;
+  transition: color 0.2s ease;
+  font-size: 1.8rem;
+  line-height: 1.125;
+}
+@media (min-width: 64em) {
+  .accordion details summary p {
+    font-size: 2rem;
+  }
+}
+.accordion details summary p:last-of-type {
+  margin: 0;
+}
+.accordion details summary span {
+  transition: all 0.2s ease;
+}
+.accordion details summary:hover {
+  color: rgba(var(--color-text), 1);
+}
+.accordion details summary::-webkit-details-marker {
+  display: none;
+}
+.accordion details[open] summary {
+  color: rgba(var(--color-text), 1);
+}
+.accordion details[open] summary span {
+  transform: rotate(180deg);
+}
+.accordion details[open] summary ~ * {
+  animation: sweep 0.11s ease-in-out;
+}
+@keyframes sweep {
+  0% {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.accordion details .content {
+  padding: 0 2.4rem 2.4rem 2.4rem;
+  display: block;
+}
+.accordion .container {
+  display: grid;
+}
+@media (min-width: 48em) {
+  .accordion .container.has-content {
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 6.4rem;
+  }
+  .accordion .container.has-fullwidth {
+    grid-template-columns: 1fr;
+    grid-gap: 0;
+  }
+}
+@media (min-width: 48em) {
+  .accordion__content .sticky {
+    position: sticky;
+    top: 10rem;
+    padding: 1.6rem 0 4rem;
+  }
+}

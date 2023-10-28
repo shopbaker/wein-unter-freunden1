@@ -1,0 +1,81 @@
+{%- comment -%}
+  Renders the section heading.
+
+  Usage:
+  {%- render 'component-header-slider'
+    id: id, icon: icon, caption: caption, heading: heading, heading_type: heading_type, subheading: subheading, button_text: button_text, button_url: button_url, style_button: style_button, color_icon: color_icon, color_text: color_text, color_subheading: color_subheading, display_pagination: display_pagination, display_navigation: display_navigation
+  -%}
+{%- endcomment -%}
+{%- if icon and icon != '' or caption and caption != '' or heading and heading != '' or subheading and subheading != '' or button_text and button_text != '' or display_pagination == true or display_navigation == true -%}
+  <div class="grid-content__header{% if icon == '' and caption == '' and heading == '' and subheading == '' and button_text == '' and mobile_swipe == true and display_pagination == true or display_navigation == true %} hide-desktop{% endif %}">
+    {% if icon != '' or caption != '' or heading != '' or subheading != '' %}
+      <div class="heading__section">
+        {%- unless icon == 'none' -%}
+          {% if icon != '' %}
+            {%- render 'component-icon', icon: icon -%}
+            {%- if color_icon and color_icon != '' and color_icon != 'rgba(0,0,0,0)' -%}
+              <style>
+                #shopify-section-{{ id }} .heading__section .icon {
+                    color: {{ color_icon }};
+                  }
+              </style>
+            {% endif %}
+          {% endif %}
+        {%- endunless -%}
+
+        {%- if caption != '' -%}
+          <p class="text-display-xs text--caption">{{ caption }}</p>
+        {%- endif -%}
+
+        {%- if heading and heading != '' -%}
+          {%- if heading_type and heading_type != '' -%}
+            {% assign heading_level = heading_type %}
+          {%- else -%}
+            {% assign heading_level = 'p' %}
+          {%- endif -%}
+          <{{ heading_level }}
+            {%- if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' -%}
+              style="color: {{ color_text }};"
+            {%- endif -%}
+          >
+            {{- heading -}}
+          </{{ heading_level }}>
+        {%- endif -%}
+
+        {%- if subheading and subheading != '' -%}
+          <div
+            class="subheading wysiwyg"
+            {% if color_subheading and color_subheading != '' and color_subheading != 'rgba(0,0,0,0)' %}
+              style="color: {{ color_subheading }};"
+            {% endif %}
+          >
+            {{ subheading }}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    {%- if display_pagination or display_navigation or button_text != '' -%}
+      <div class="grid-content__slider-nav">
+        {%- if display_pagination -%}
+          <div class="swiper-pagination no-js-hidden"></div>
+        {%- endif -%}
+        {%- if display_navigation -%}
+          <span class="icon swiper-button-prev no-js-hidden">chevron_left</span>
+          <span class="icon swiper-button-next no-js-hidden">chevron_right</span>
+        {%- endif -%}
+        {%- if button_text != '' -%}
+          {%- render 'component-button', text: button_text, url: button_url, alignment_vertical: 'center', style_button: style_button -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if color_text and color_text != ''and color_text != 'rgba(0,0,0,0)' -%}
+    <style>
+      #shopify-section-{{ id }} .grid-content__header {{ heading_type }},
+      #shopify-section-{{ id }} .grid-content__header .text-display-xs {
+        color: {{ color_text }}
+      }
+    </style>
+  {%- endif -%}
+{%- endif -%}

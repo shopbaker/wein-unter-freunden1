@@ -1,0 +1,96 @@
+{%- for block in section.blocks -%}
+  {%- case block.type -%}
+    {%- when 'custom_javascript' -%}
+      {%- if block.settings.code and block.settings.code != '' -%}
+        <script defer>
+          {{ block.settings.code }}
+        </script>
+      {%- endif -%}
+    {%- when 'custom_asset' -%}
+      {%- if block.settings.code and block.settings.code != '' -%}
+        {{ block.settings.code }}
+      {%- endif -%}
+    {%- when 'custom_css' -%}
+      {%- if block.settings.code and block.settings.code != '' -%}
+        <style media="print" onload="this.media='all'">
+          {{ block.settings.code }}
+        </style>
+      {%- endif -%}
+  {%- endcase -%}
+{%- endfor -%}
+
+{% schema %}
+{
+  "name": "t:name.custom_code",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_custom_code"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "custom_asset",
+      "name": "t:name.custom_asset",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:info.intro_block_custom_asset"
+        },
+        {
+          "type": "liquid",
+          "id": "code",
+          "label": "t:label.code"
+        }
+      ]
+    },
+    {
+      "type": "custom_css",
+      "name": "t:name.custom_css",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:info.intro_block_custom_css"
+        },
+        {
+          "type": "liquid",
+          "id": "code",
+          "label": "t:label.code"
+        }
+      ]
+    },
+    {
+      "type": "custom_javascript",
+      "name": "t:name.custom_javascript",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:info.intro_block_custom_javascript"
+        },
+        {
+          "type": "liquid",
+          "id": "code",
+          "label": "t:label.code"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:name.custom_code",
+      "blocks": [
+        {
+          "type": "custom_asset"
+        },
+        {
+          "type": "custom_css"
+        },
+        {
+          "type": "custom_javascript"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

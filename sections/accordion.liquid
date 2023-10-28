@@ -1,0 +1,275 @@
+<link
+  rel="stylesheet"
+  href="{{ 'component-accordion.css' | asset_url }}"
+  media="print"
+  onload="this.media='all'"
+>
+<noscript>{{ 'component-accordion.css' | asset_url | stylesheet_tag }}</noscript>
+
+<script src="{{ 'component-accordion.js' | asset_url }}" defer="defer"></script>
+
+<div class="section__wrapper section__wrapper--no-overflow {{ section.settings.display_visibility }}">
+  {%-
+    render 'component-section-padding'
+    id: section.id,
+    color_background_gradient: section.settings.color_background_gradient,
+    color_background: section.settings.color_background,
+    padding_top_mobile: section.settings.padding_top_mobile,
+    padding_bottom_mobile: section.settings.padding_bottom_mobile,
+    padding_top_desktop: section.settings.padding_top_desktop,
+    padding_bottom_desktop: section.settings.padding_bottom_desktop,
+    style_line_top: section.settings.style_line_top,
+    style_line_bottom: section.settings.style_line_bottom,
+    color_line: section.settings.color_line
+  -%}
+
+  <div
+    class="container{% if section.settings.color_background_gradient != '' or section.settings.color_background and section.settings.color_background != '' and section.settings.color_background != 'rgba(0,0,0,0)' %} section__wrapper--background{% endif %}{% if section.settings.heading and section.settings.heading != '' or section.settings.caption and section.settings.caption != '' or section.settings.subheading and section.settings.subheading != '' or section.settings.button_text and section.settings.button_text != '' %} has-content{% endif%}{% if section.settings.display_full_width %} has-fullwidth{% endif %}"
+    {% if section.settings.color_background_gradient != '' or section.settings.color_background and section.settings.color_background != '' and section.settings.color_background != 'rgba(0,0,0,0)' %}
+      style="background: {% if section.settings.color_background_gradient != '' %}{{ section.settings.color_background_gradient }}{% else %}{{ section.settings.color_background }}{% endif %};"
+    {% endif %}
+  >
+    {%- if section.settings.heading and section.settings.heading != '' or section.settings.caption and section.settings.caption != '' or section.settings.subheading and section.settings.subheading != '' or section.settings.button_text and section.settings.button_text != '' -%}
+      <div class="accordion__content">
+        <div
+          {% if section.settings.sticky_header and section.settings.display_full_width == false %}
+            class="sticky"
+          {% endif %}
+        >
+          {%- render 'component-header-section' id: section.id, icon: section.settings.icon, caption: section.settings.caption, heading: section.settings.heading, heading_type: section.settings.heading_type, subheading: section.settings.subheading, button_text: section.settings.button_text, button_url: section.settings.button_url, style_button: section.settings.style_button, color_icon: section.settings.color_icon, color_text: section.settings.color_text, color_subheading: section.settings.color_subheading -%}
+        </div>
+      </div>
+    {%- endif -%}
+    <div class="accordion__tabs">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'row' -%}
+            {%- render 'component-accordion' title: block.settings.title, content: block.settings.content, id: block.id, image: block.settings.image, display_open: block.settings.display_open, display_imagery: block.settings.display_imagery, article: block.settings.article, page: block.settings.page, url_video: block.settings.url_video, url_video_hosted: block.settings.url_video_hosted, image_video: block.settings.image_video, video_autoplay: block.settings.video_autoplay, video_loop: block.settings.video_loop, video_mute: block.settings.video_mute -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:name.accordion",
+  "tag": "section",
+  "class": "accordion",
+  "settings": [
+    { "type": "paragraph", "content": "t:info.intro_accordion" },
+    {
+      "type": "checkbox",
+      "id": "display_full_width",
+      "label": "t:label.show_full_width",
+      "info": "t:info.show_full_width"
+    },
+    { "type": "header", "content": "t:info.header_header_settings" },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "t:label.enable_sticky_header",
+      "info": "t:info.enable_sticky_header"
+    },
+    { "type": "text", "id": "icon", "label": "t:label.icon", "info": "t:info.icon" },
+    { "type": "text", "id": "caption", "label": "t:label.caption" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:label.heading_accordion",
+      "default": "Accordion"
+    },
+    {
+      "type": "select",
+      "id": "heading_type",
+      "label": "t:label.heading_type",
+      "options": [
+        { "value": "p", "label": "t:label.paragraph" },
+        { "value": "h1", "label": "t:label.heading_1" },
+        { "value": "h2", "label": "t:label.heading_2" },
+        { "value": "h3", "label": "t:label.heading_3" },
+        { "value": "h4", "label": "t:label.heading_4" },
+        { "value": "h5", "label": "t:label.heading_5" },
+        { "value": "h6", "label": "t:label.heading_6" }
+      ],
+      "default": "h2"
+    },
+    { "type": "richtext", "id": "subheading", "label": "t:label.subheading" },
+    { "type": "url", "id": "button_url", "label": "t:label.button_link" },
+    { "type": "text", "id": "button_text", "label": "t:label.button_text_empty" },
+    {
+      "type": "select",
+      "id": "style_button",
+      "label": "t:label.button_style",
+      "options": [
+        { "value": "primary", "label": "t:label.primary" },
+        { "value": "secondary", "label": "t:label.secondary" },
+        { "value": "xl", "label": "t:label.extra_large" },
+        { "value": "plain", "label": "t:label.plain" },
+        { "value": "sm", "label": "t:label.small" },
+        { "value": "sm-secondary", "label": "t:label.small_secondary" }
+      ]
+    },
+    { "type": "header", "content": "t:info.header_color_settings" },
+    { "type": "paragraph", "content": "t:info.intro_color_settings" },
+    { "type": "color", "id": "color_icon", "label": "t:label.icon_color" },
+    { "type": "color", "id": "color_text", "label": "t:label.text_color" },
+    { "type": "color", "id": "color_subheading", "label": "t:label.subheading_color" },
+    { "type": "color", "id": "color_background", "label": "t:label.background_color" },
+    {
+      "type": "color_background",
+      "id": "color_background_gradient",
+      "label": "t:label.background_gradient"
+    },
+    { "type": "header", "content": "t:info.header_section_padding_settings" },
+    { "type": "paragraph", "content": "t:info.intro_section_padding_settings" },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_mobile_16",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_mobile_16",
+      "default": 16
+    },
+    { "type": "header", "content": "t:info.header_separator_settings" },
+    { "type": "paragraph", "content": "t:info.intro_separator_settings" },
+    {
+      "type": "select",
+      "id": "style_line_top",
+      "label": "t:label.top_separator_style",
+      "options": [
+        { "value": "dashed", "label": "t:label.dashed" },
+        { "value": "dotted", "label": "t:label.dotted" },
+        { "value": "line", "label": "t:label.line" },
+        { "value": "none", "label": "t:label.none" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "style_line_bottom",
+      "label": "t:label.bottom_separator_style",
+      "options": [
+        { "value": "dashed", "label": "t:label.dashed" },
+        { "value": "dotted", "label": "t:label.dotted" },
+        { "value": "line", "label": "t:label.line" },
+        { "value": "none", "label": "t:label.none" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "color_line", "label": "t:label.separator_color" },
+    { "type": "header", "content": "t:info.header_visibility_settings" },
+    { "type": "paragraph", "content": "t:info.intro_visibility_settings" },
+    {
+      "type": "radio",
+      "id": "display_visibility",
+      "label": "t:label.visibility",
+      "options": [
+        { "value": "hide-no", "label": "t:label.do_not_hide" },
+        { "value": "hide-desktop", "label": "t:label.hide_on_desktop" },
+        { "value": "hide-mobile", "label": "t:label.hide_on_mobile" }
+      ],
+      "default": "hide-no"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "t:name.row",
+      "settings": [
+        { "type": "paragraph", "content": "t:info.intro_accordion" },
+        { "type": "checkbox", "id": "display_open", "label": "t:label.show_open_by_default" },
+        { "type": "article", "id": "article", "label": "t:label.blog_post" },
+        { "type": "page", "id": "page", "label": "t:label.pages", "info": "t:info.pages" },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:label.title_accordion_row",
+          "default": "Accordion row"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:label.content",
+          "default": "<p>Add relevant text content with the richtext editor. Note that you can also include <a href=\”#\”>links</a> and basic formatting in this content, e.g. <b>bold</b> and <em>italic</em>.</p>"
+        },
+        { "type": "header", "content": "t:info.header_imagery_settings" },
+        { "type": "paragraph", "content": "t:info.intro_imagery_settings" },
+        {
+          "type": "radio",
+          "id": "display_imagery",
+          "label": "t:label.imagery_layout",
+          "options": [
+            { "value": "top", "label": "t:label.top" },
+            { "value": "bottom", "label": "t:label.bottom" }
+          ],
+          "default": "bottom"
+        },
+        { "type": "image_picker", "id": "image", "label": "t:label.image" },
+        { "type": "paragraph", "content": "t:info.intro_video_settings" },
+        {
+          "type": "video_url",
+          "id": "url_video",
+          "label": "t:label.video_service_url_empty",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "video", "id": "url_video_hosted", "label": "t:label.shopify-hosted_video" },
+        {
+          "type": "image_picker",
+          "id": "image_video",
+          "label": "t:label.video_poster_image",
+          "info": "t:info.video_poster_image"
+        },
+        {
+          "type": "checkbox",
+          "id": "video_autoplay",
+          "label": "t:label.autoplay_video",
+          "info": "t:info.autoplay_video"
+        },
+        { "type": "checkbox", "id": "video_loop", "label": "t:label.loop_video" },
+        { "type": "checkbox", "id": "video_mute", "label": "t:label.mute_video", "default": true },
+        { "type": "paragraph", "content": "t:info.intro_block_accordion" },
+        { "type": "paragraph", "content": "t:info.intro_block_row" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:name.accordion",
+      "blocks": [{ "type": "row" }, { "type": "row" }, { "type": "row" }]
+    }
+  ]
+}
+{% endschema %}

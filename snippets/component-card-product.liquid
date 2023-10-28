@@ -1,0 +1,108 @@
+{%- comment -%}
+  Renders a product card component
+
+  Accepts:
+  - product: {Object} Product Liquid object
+
+  Usage:
+  {%- render 'component-card-product',
+    product: product
+  -%}
+{%- endcomment -%}
+
+{%- liquid
+  if ratio_image == 'default' or ratio_image == null
+    assign ratio_image = settings.card_ratio_image_product
+  else
+    assign ratio_image = ratio_image
+  endif
+
+  if display_text_card == 'default' or display_text_card == null
+    assign display_text_card = settings.card_display_text_product
+  else
+    assign display_text_card = display_text_card
+  endif
+
+  if style_card == 'default' or style_card == null
+    assign style_card = settings.card_style_product
+  else
+    assign style_card = style_card
+  endif
+
+  if style_button_card == 'default' or style_button_card == null
+    assign style_button_card = settings.settings_style_cta_card_product
+  else
+    assign style_button_card = style_button_card
+  endif
+
+  for collection in product.collections
+    for badge_collection in settings.card_badges_collection
+      if collection.handle == badge_collection.handle
+        assign badge = collection.title
+        break
+      endif
+    endfor
+    if badge
+      break
+    endif
+  endfor
+-%}
+
+<div class="card-product card {{ class }}">
+  <a href="{{ product.url }}" title="View {{ product.title | escape }}">
+    {%- if product.compare_at_price > product.price -%}
+      <p class="card-product__badge card-product__badge--on-sale">{{ 'products.on_sale' | t }}</p>
+    {%- elsif badge -%}
+      <p class="card-product__badge card-product__badge--collection card-product__badge--collection-{{ badge | handleize }}">{{ badge }}</p>
+    {%- elsif product.available == false -%}
+      <p class="card-product__badge card-product__badge--out-of-stock">{{ 'products.sold_out' | t }}</p>
+    {%- endif -%}
+    {%- if product.featured_media and style_card != 'no_image' -%}
+      <figure class="figure--{{ ratio_image }} style--{{ style_card }}" role="none">
+        {% unless no_lazy_load %}<noscript class="loading-lazy">{% endunless %}
+          {{ product.featured_media | image_url: width: 1600 | image_tag: width: 800, class: 'img-placeholder', loading: 'lazy' }}
+        {% unless no_lazy_load %}</noscript>{% endunless %}
+      </figure>
+    {%- elsif style_card != 'no_image' -%}
+      <figure class="figure--{{ ratio_image }} style--{{ style_card }}" role="none">
+        {{ 'product-1' | placeholder_svg_tag: 'img-placeholder' }}
+      </figure>
+    {%- endif -%}
+    {%- unless display_text_card == 'no_text' -%}
+      <div class="card__content">
+        {%- if display_text_card != 'text' -%}
+          {%- if settings.display_vendor and product.vendor != '' -%}
+            <p class="text-xs">{{ product.vendor }}</p>
+          {%- endif -%}
+          <p class="card__title text-lg">
+            {%- if product.title -%}
+              {{ product.title | escape }}
+            {%- else -%}
+              {{ 'products.title' | t }}
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+        {%- if display_text_card != 'title' -%}
+          <p class="card__description text-sm">{{ product.description | strip_html }}</p>
+        {%- endif -%}
+      </div>
+    {%- endunless -%}
+  </a>
+  {%- unless show_footer == false -%}
+    <div class="card__bottom">
+      {%- render 'price', product: product -%}
+      {%- if product.variants.size == 1 and product.available and card_cta_product and product.selling_plan_groups.size == 0 -%}
+        {%- render 'component-form-product', product: product, class: 'button--card swiper-no-swiping', show_icon: true, cta_icon: 'shopping_cart', display_additional_buttons: false -%}
+      {%- else -%}
+        <a
+          href="{{ product.url }}"
+          class="button--sm-secondary button--view-product swiper-no-swiping"
+          title="{{ 'cards.products.view' | t }} {{ product.title | escape }}"
+        >
+          <span class="button--view-product__text">{{- 'cards.products.view_product' | t -}}</span>
+          {% render 'component-icon', icon: 'visibility', icon_class: "button--view-product__icon" %}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endunless -%}
+</div>

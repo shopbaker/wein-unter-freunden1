@@ -1,0 +1,66 @@
+{%- comment -%}
+  Renders the style snippet for section padding control.
+
+  Usage:
+  {%- render 'component-slider-settings'
+    id: section.id,
+    block_size: section.blocks.size,
+    column_count_mobile: section.settings.column_count_mobile,
+    column_count_desktop: section.settings.column_count_desktop
+  -%}
+{%- endcomment -%}
+
+{%- if block_size > column_count_mobile -%}
+  {% assign divide_by_mobile = column_count_mobile | plus: 0.25 %}
+{%- else -%}
+  {% assign divide_by_mobile = column_count_mobile %}
+{%- endif -%}
+{%- if block_size > column_count_desktop -%}
+  {% assign divide_by_desktop = column_count_desktop | plus: 0.25 %}
+{%- else -%}
+  {% assign divide_by_desktop = column_count_desktop %}
+{%- endif -%}
+<style>
+  @media (max-width: 767px) {
+    #shopify-section-{{ id }} .swiper[data-mobile-layout="slider"] .swiper-slide {
+      width: calc(
+        (100%
+        - ( {{ column_count_mobile }} - 1 )
+        * 16px)
+        / {{ divide_by_mobile }}
+      ) !important;
+    }
+    #shopify-section-{{ id }} .swiper[data-mobile-layout="slider"] .swiper-slide:not(:last-of-type) {
+      margin-right: 16px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    #shopify-section-{{ id }} .swiper[data-mobile-layout="slider"] .swiper-slide {
+      width: calc(
+        (100%
+        - ( {{ column_count_mobile }} - 1 )
+        * 24px)
+        / {{ divide_by_mobile }}
+      ) !important;
+      margin-right: 24px;
+    }
+    #shopify-section-{{ id }} .swiper[data-mobile-layout="slider"] .swiper-slide:not(:last-of-type) {
+      margin-right: 24px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #shopify-section-{{ id }} .swiper[data-desktop-layout="slider"] .swiper-slide {
+      width: calc(
+        (100%
+        - ( {{ column_count_desktop }} - 1 )
+        * 32px)
+        / {{ divide_by_desktop }}
+      ) !important;
+    }
+    #shopify-section-{{ id }} .swiper[data-desktop-layout="slider"] .swiper-slide:not(:last-of-type) {
+      margin-right: 32px;
+    }
+  }
+</style>

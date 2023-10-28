@@ -1,0 +1,185 @@
+{%- comment -%}
+  Renders a cart drawer.
+
+  Usage:
+  {%- render 'component-cart-drawer'
+    heading: block.settings.heading,
+    subheading: block.settings.subheading,
+    button_text: block.settings.button_text,
+    button_url: block.settings.button_url,
+    display_note: block.settings.display_note,
+    display_free_shipping: block.settings.display_free_shipping,
+    text_announcement: block.settings.text_announcement,
+    color_text: block.settings.color_text,
+    color_icon: block.settings.color_icon,
+    icon_announcement: block.settings.icon_announcement -%}
+{%- endcomment -%}
+
+<div id="mini-cart" class="mini-cart" aria-hidden="true" tabindex="-1">
+  <script src="{{ 'component-mini-cart.js' | asset_url }}" defer="defer"></script>
+
+  <div class="mini-cart__sidebar" aria-hidden="true">
+    <div>
+      <button id="cart-close" class="text-lg mini-cart__close" tabindex="0">
+        {%- render 'component-icon', icon: 'chevron_left' -%}
+        {{ 'cart.continue_shopping' | t -}}
+      </button>
+
+      <div class="mini-cart__content{% if display_free_shipping %} has-free-shipping{% endif %}{% if display_note %} has-display-note{% endif %}">
+        <div class="mini-cart--empty">
+          <p class="text-lg">
+            {%- if heading and heading != '' -%}
+              {{ heading }}
+            {%- else -%}
+              {{ 'cart.empty' | t }}
+            {%- endif -%}
+          </p>
+          {%- if subheading and subheading != '' -%}
+            {{ subheading }}
+          {%- else -%}
+            <p>{{ 'cart.no_items' | t }}</p>
+          {%- endif -%}
+          <a
+            href="{%- if button_url -%}{{ button_url }}{%- else -%}{{ routes.all_products_collection_url }}{%- endif -%}"
+            class="button--sm"
+          >
+            {%- if button_text and button_text != '' -%}
+              {{ button_text }}
+            {%- else -%}
+              {{ 'cart.continue_shopping' | t }}
+            {%- endif -%}
+          </a>
+        </div>
+        <div class="cart-items__container">
+          {%- if cart.items -%}
+            {%- for item in cart.items -%}
+              {%- render 'component-cart-item', item: item -%}
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <div class="mini-cart__footer">
+      {%- if display_note -%}
+        <div class="cart-summary__note accordion">
+          <link
+            rel="stylesheet"
+            href="{{ 'component-accordion.css' | asset_url }}"
+            media="print"
+            onload="this.media='all'"
+          >
+          <noscript>{{ 'component-accordion.css' | asset_url | stylesheet_tag }}</noscript>
+          <script src="{{ 'component-accordion.js' | asset_url }}" defer="defer"></script>
+          <details class="accordion__wrapper">
+            <summary tabindex="0">
+              <p class="text-sm">{{ 'cart.note' | t }}</p>
+              {% render 'component-icon', icon: 'expand_more' %}
+            </summary>
+            <div class="content">
+              <cart-note>
+                <label class="visually-hidden" for="CartDrawer-Note">{{ 'cart.note' | t }}</label>
+                <textarea
+                  id="CartDrawer-Note"
+                  name="note"
+                  placeholder="{{ 'cart.note' | t }}"
+                >{{ cart.note }}</textarea>
+              </cart-note>
+            </div>
+          </details>
+        </div>
+      {%- endif -%}
+      <div class="cart-summary__meta">
+        <div class="cart-summary__header">
+          <p>{{ 'cart.order_summary' | t }}</p>
+          <p>
+            {{ 'cart.count_html' | t: count: cart.item_count }}
+          </p>
+        </div>
+
+        <div class="cart-summary__line-items">
+          <p>{{ 'cart.subtotal' | t }}</p>
+          <p id="cart-total-price">{{ cart.total_price | money }}</p>
+        </div>
+
+        <div class="cart-summary__line-items cart-summary__line-items--notice">
+          <p>
+            {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+              {{ 'cart.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+            {%- elsif cart.taxes_included -%}
+              {{ 'cart.taxes_included_but_shipping_at_checkout' | t }}
+            {%- elsif shop.shipping_policy.body != blank -%}
+              {{ 'cart.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+            {%- else -%}
+              {{ 'cart.taxes_and_shipping_at_checkout' | t }}
+            {%- endif -%}
+          </p>
+        </div>
+
+        <div class="cart-summary__buttons disabled">
+          {%- if cta_cart == 'checkout' or cta_cart == 'both' -%}
+            <a class="button" id="checkout" name="checkout" href="/checkout">
+              {%- render 'component-icon', icon: 'security' -%}
+              {{ 'cart.checkout' | t }}
+            </a>
+            {%- if additional_checkout_buttons and settings.display_dynamic_checkout -%}
+              <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                {{ content_for_additional_checkout_buttons }}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if cta_cart == 'cart' or cta_cart == 'both' -%}
+            <a class="button{%- if cta_cart == 'both' -%}--secondary{%- endif -%}" href="{{ routes.cart_url }}">
+              {%- render 'component-icon', icon: 'shopping_cart' -%}
+              {{ 'cart.go' | t }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        <div id="cart-errors"></div>
+
+        {%- if display_free_shipping -%}
+          <div class="cart-summary__free-shipping">
+            <p class="free-shipping-left" data-percentage="0">
+              {{ 'cart.you_have' | t }}
+              <span id="amount-left">
+                {{- settings.threshold_free_shipping | times: 100 | money_without_trailing_zeros -}}
+              </span>
+              {{ 'cart.left_until_free_shipping' | t }}.
+            </p>
+            <p class="free-shipping-qualified" style="display: none;">
+              {%- render 'component-icon', icon: 'check' -%}
+              {{ 'cart.qualified_free_shipping' | t }}
+            </p>
+          </div>
+        {%- endif -%}
+
+        {%- if text_announcement and text_announcement != '' -%}
+          <div
+            class="cart-summary__certificate"
+            {% if color_text and color_text != '' and color_text != 'rgba(0,0,0,0)' %}
+              style="color: {{ color_text }}"
+            {% endif %}
+          >
+            {%- assign icon = icon_announcement -%}
+            {%- unless icon == 'none' -%}
+              {% if icon and icon != '' %}
+                <div
+                  {% if color_icon and color_icon != '' and color_icon != 'rgba(0,0,0,0)' %}
+                    style="color: {{ color_icon }}"
+                  {% endif %}
+                >
+                  {%- render 'component-icon', icon: icon -%}
+                </div>
+              {% endif %}
+            {%- endunless -%}
+            {{ text_announcement }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="empty-cart-item" style="display: none;">
+  {%- render 'component-cart-item' -%}
+</div>

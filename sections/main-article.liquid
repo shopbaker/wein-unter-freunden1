@@ -1,0 +1,322 @@
+<link rel="stylesheet" href="{{ 'section-main-article.css' | asset_url }}">
+<link
+  rel="stylesheet"
+  href="{{ 'component-tooltip.css' | asset_url }}"
+  media="print"
+  onload="this.media='all'"
+>
+<noscript>{{ 'component-tooltip.css' | asset_url | stylesheet_tag }}</noscript>
+
+<script src="{{ 'popper.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-tooltip.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-article.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign html_string = article.content
+    assign pieces = html_string | split: 'href="'
+    assign extracted_urls = ''
+    assign should_contain = '/products' | prepend: shop.url
+    for piece in pieces
+      unless forloop.first
+          if piece contains should_contain
+              assign extracted_url = piece | replace_first: '">', ' ' | truncatewords: 1 | remove_first: '...'
+              assign extracted_urls = extracted_urls | append: ', ' | append: extracted_url
+          endif
+      endunless
+    endfor
+  assign extracted_urls = extracted_urls | remove_first: ', ' | split: ', ' | uniq
+-%}
+
+<div class="section__wrapper">
+  {%-
+    render 'component-section-padding'
+    id: section.id,
+    color_background_gradient: '',
+    color_background: '',
+    padding_top_mobile: section.settings.padding_top_mobile,
+    padding_bottom_mobile: section.settings.padding_bottom_mobile,
+    padding_top_desktop: section.settings.padding_top_desktop,
+    padding_bottom_desktop: section.settings.padding_bottom_desktop,
+    style_line_top: section.settings.style_line_top,
+    style_line_bottom: section.settings.style_line_bottom,
+    color_line: section.settings.color_line
+  -%}
+  <div class="container">
+    <div class="main-article__wrapper">
+      <div class="main-article wysiwyg" itemprop="articleBody" {{ block.shopify_attributes }}>
+        {{ article.content | replace: '<iframe ', '<iframe loading="lazy"' }}
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {%- render block -%}
+            {%- when 'custom_liquid' %}
+              <div {{ block.shopify_attributes }}>
+                {{ block.settings.custom_liquid }}
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="main-article__footer">
+        {%- if article.tags -%}
+          <div class="main-article__tags">
+            {%- for tag in article.tags -%}
+              {%- unless tag contains 'related-product' -%}
+                <a class="button--sm-inverted" href="{{ blog.url }}/tagged/{{ tag.handle }}">
+                  {{- tag.title -}}
+                </a>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="main-article__ui">
+          {%- render 'component-ui-share' -%}
+          {%- render 'component-ui-print' -%}
+        </div>
+      </div>
+    </div>
+
+    {% if extracted_urls and extracted_urls.size > 0 and section.settings.display_related_products %}
+      <div class="main-article__sidebar">
+        <div class="main-article__sidebar-inner">
+          {%- if section.settings.heading_sidebar != '' -%}
+            <p class="text-display-md">{{ section.settings.heading_sidebar }}</p>
+          {%- endif -%}
+          {%- for extracted_url in extracted_urls -%}
+            {%- assign handle = extracted_url | split: 'products/' -%}
+            {%- capture product_handle -%}{{ handle[1] | handleize }}{%- endcapture -%}
+            {%- assign product = all_products[product_handle] -%}
+            {%- if product.title != blank -%}
+              {%- render 'component-card-product', product: product, card_cta_product: false -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if extracted_urls and extracted_urls.size > 0 and section.settings.display_related_products %}
+  {%- for extracted_url in extracted_urls -%}
+    {%- assign handle = extracted_url | split: 'products/' -%}
+    {%- capture product_handle -%}{{ handle[1] | handleize }}{%- endcapture -%}
+    {%- assign product = all_products[product_handle] -%}
+    {%- if product.title != blank -%}
+      <div class="tooltip-content" id="{{ product_handle }}">
+        <div class="tooltip-content__wrapper">
+          {%- render 'component-card-product', product: product, card_cta_product: false -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "articleBody": {{ article.content | strip_html | json }},
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ shop.url | append: page.url | json }}
+    },
+    "heading": {{ article.title | json }},
+    {%- if article.excerpt != blank -%}
+      "description": {{ article.excerpt | strip_html | json }},
+    {%- endif -%}
+    {%- if article.image -%}
+      {%- assign image_size = article.image.width | append: 'x' -%}
+      "image": [
+        {{ article | image_url: image_size | prepend: "https:" | json }}
+      ],
+    {%- endif -%}
+    "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    "dateCreated": {{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    "author": {
+      "@type": "Person",
+      "name": {{ article.author | json }}
+    },
+    "publisher": {
+      "@type": "Organization",
+      {%- if settings.share_image -%}
+        {%- assign image_size = settings.share_image.width | append: 'x' -%}
+        "logo": {
+          "@type": "ImageObject",
+          "height": {{ settings.share_image.height | json }},
+          "url": {{ settings.share_image | image_url: image_size | prepend: "https:" | json }},
+          "width": {{ settings.share_image.width | json }}
+        },
+      {%- endif -%}
+      "name": {{ shop.name | json }}
+    }
+  }
+</script>
+
+{% schema %}
+{
+  "name": "t:name.blog_post",
+  "tag": "article",
+  "class": "article",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_blog_post"
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_sidebar_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_sidebar_settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_related_products",
+      "label": "t:label.show_related_products",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading_sidebar",
+      "label": "t:label.heading_sidebar",
+      "default": "Products from the article"
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_section_padding_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_section_padding_settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_desktop_32",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.top_padding_mobile_16",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:label.bottom_padding_mobile_16",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:info.header_separator_settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:info.intro_separator_settings"
+    },
+    {
+      "type": "select",
+      "id": "style_line_top",
+      "label": "t:label.top_separator_style",
+      "options": [
+        {
+          "value": "dashed",
+          "label": "t:label.dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "t:label.dotted"
+        },
+        {
+          "value": "line",
+          "label": "t:label.line"
+        },
+        {
+          "value": "none",
+          "label": "t:label.none"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "style_line_bottom",
+      "label": "t:label.bottom_separator_style",
+      "options": [
+        {
+          "value": "dashed",
+          "label": "t:label.dashed"
+        },
+        {
+          "value": "dotted",
+          "label": "t:label.dotted"
+        },
+        {
+          "value": "line",
+          "label": "t:label.line"
+        },
+        {
+          "value": "none",
+          "label": "t:label.none"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "color_line",
+      "label": "t:label.separator_color"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:name.custom_liquid",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:info.intro_section_custom_liquid"
+        },
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:label.custom_liquid",
+          "info": "t:info.custom_liquid"
+        }
+      ]
+    }
+  ],
+  "templates": [
+    "article"
+  ]
+}
+{% endschema %}

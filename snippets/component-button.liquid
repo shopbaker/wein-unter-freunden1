@@ -1,0 +1,28 @@
+{%- comment -%}
+  Renders a button.
+
+  Accepts:
+  - cta: {String} The button text
+
+  Usage:
+  {%- render 'component-button'
+    text: block.settings.text,
+    url: block.settings.link,
+    target: block.settings.target,
+    style_button: block.settings.style_button (or style_button)
+    alignment_vertical: block.settings.alignment_vertical
+  -%}
+{%- endcomment -%}
+
+<a
+  {% if url %}
+    href="{{ url }}"
+  {% endif %}
+  target="{% if target %}{{ target }}{% else %}_self{% endif %}"
+  class="button{{ style_button | default: 'primary' | prepend: '--' }}"
+  {%- if alignment_vertical -%}
+    style="align-self: {%- if alignment_vertical == 'top' -%}flex-start{%- elsif alignment_vertical == 'center' -%}center{%- else -%}end{%- endif -%};"
+  {%- endif -%}
+>
+  {{- text -}}
+</a>
